@@ -1,4 +1,5 @@
 using PyCall
+using SpaceLib
 
 
 function connect(name::String)
@@ -26,7 +27,7 @@ function find_range_safety(part::PyObject)
 end
 
 
-function range_safety(core::Core)
+function range_safety(core::ProbeCore)
     core.range_safety_trigger(trigger("Range Safety", true))
 end
 
@@ -35,8 +36,8 @@ function find_core(ves::PyObject)
     core_candidate = ves.parts.with_tag("core")
     if length(core_candidate) > 0
         part = core_candidate[1]
-        return Core(part, find_range_safety(part))
+        return ProbeCore(part, find_range_safety(part))
     end
     part = ves.parts.all[1]
-    return Core(part, find_range_safety(part))
+    return ProbeCore(part, find_range_safety(part))
 end

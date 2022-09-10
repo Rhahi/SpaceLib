@@ -1,7 +1,5 @@
-using SpaceLib.KRPC
-using SpaceLib.Timing
+using SpaceLib
 
 function stage(sp::Spacecraft)
     sp.ves.control.activate_next_stage()
 end
-
