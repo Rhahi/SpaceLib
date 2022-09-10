@@ -1,7 +1,7 @@
 name = "SpaceLib"
 uuid = "fb1af579-3fc7-4df4-a3e6-ebb5d9b870c9"
 authors = ["Rhahi <git@rhahi.com>"]
-version = "0.1.0"
+version = "0.1.1"
 
 [deps]
 Logging = "56ddb016-857b-54e1-b83d-db4d58db5568"
