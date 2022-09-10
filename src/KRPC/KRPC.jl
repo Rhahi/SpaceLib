@@ -7,7 +7,7 @@ function __init__()
     copy!(krpc, pyimport("krpc"))
 end
 
-export connect, range_safety, with
+export connect, range_safety;
 export Spacecraft;
 
 include("./types.jl")
