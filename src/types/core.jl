@@ -1,5 +1,6 @@
 using SpaceLib
 using KRPC
+using KRPC.Interface.SpaceCenter.Helpers
 import KRPC.Interface.SpaceCenter.RemoteTypes as RemoteTypes
 
 
@@ -38,6 +39,6 @@ function find_core(ves::RemoteTypes.Vessel)
         return ProbeCore(part, find_range_safety_trigger(part))
     end
     @warn "Could not find part with tag core, using the root part instead"
-    part = ves.parts.all[1]
+    part = All(Parts(ves))
     return ProbeCore(part, find_range_safety_trigger(part))
 end
