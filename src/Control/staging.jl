@@ -1,5 +1,7 @@
 using SpaceLib
+import KRPC.Interface.SpaceCenter.Helpers as RemoteCalls
 
-function stage(sp::Spacecraft)
-    sp.ves.control.activate_next_stage()
+
+function stage(s::Spacecraft)
+    RemoteCalls.ActivateNextStage(s.ves)
 end
