@@ -1,6 +1,6 @@
 using SpaceLib
 using KRPC
-using KRPC.Interface.SpaceCenter.Helpers
+import KRPC.Interface.SpaceCenter.Helpers as RC
 import KRPC.Interface.SpaceCenter.RemoteTypes as RemoteTypes
 
 
@@ -21,10 +21,10 @@ end
 
 
 function find_range_safety_trigger(part::RemoteTypes.Part)
-    modules = Modules(part)
+    modules = RC.Modules(part)
     for m ∈ modules
-        if HasAction(m, "Range Safety")
-            trigger() = SetAction(m, "Range Safety", true)
+        if RC.HasAction(m, "Range Safety")
+            trigger() = RC.SetAction(m, "Range Safety", true)
             return trigger
         end
     end
@@ -33,12 +33,12 @@ end
 
 
 function find_core(ves::RemoteTypes.Vessel)
-    core_candidate = WithTag(Parts(ves), "core")
+    core_candidate = RC.WithTag(RC.Parts(ves), "core")
     if length(core_candidate) > 0
         part = core_candidate[1]
         return ProbeCore(part, find_range_safety_trigger(part))
     end
     @warn "Could not find part with tag core, using the root part instead"
-    part = All(Parts(ves))
+    part = RC.All(RC.Parts(ves))
     return ProbeCore(part, find_range_safety_trigger(part))
 end
