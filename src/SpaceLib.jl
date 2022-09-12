@@ -24,7 +24,9 @@ function connect_to_spacecraft(name::String="Julia",
                                host::String="127.0.0.1",
                                port::Int64=50000,
                                stream_port::Int64=50001)
+    @debug "Connecting to spacecraft"
     conn = kerbal_connect(name, host, port, stream_port)
+    @debug "Connection complete"
     space_center = RemoteTypes.SpaceCenter(conn)
     active_vessel = Helpers.ActiveVessel(space_center)
     core = SpaceLib.find_core(active_vessel)
