@@ -17,11 +17,7 @@ function toggle_logger!(directory::String, filename::String, level::LogLevel)
     tee = TeeLogger(console, file_loggers)
     global_logger(tee)
 
-    close_io() = begin
-        @debug "Closing files"
-        close(io1)
-        close(io2)
-    end
+    return io1, io2
 end
 
 
