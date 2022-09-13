@@ -4,6 +4,7 @@ authors = ["Rhahi <git@rhahi.com>"]
 version = "0.1.2"
 
 [deps]
+Dates = "ade2ca70-3891-5945-98fb-dc099432e06a"
 KRPC = "7a052949-c101-4ca3-9a7e-43a2532b2fa8"
 Logging = "56ddb016-857b-54e1-b83d-db4d58db5568"
 LoggingExtras = "e6f89c97-d47a-5376-807f-9c37f3926c36"

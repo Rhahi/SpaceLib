@@ -1,4 +1,4 @@
-using Logging, LoggingExtras
+using Dates, Logging, LoggingExtras
 using TerminalLoggers
 import SpaceLib
 
@@ -35,7 +35,22 @@ end
 
 
 function display_logger(level::LogLevel)
-    TerminalLogger(stderr, level)
+    logger = TerminalLogger(stderr, level)
+    history = Dict{Symbol, DateTime}()
+    EarlyFilteredLogger(logger) do log
+        is_spacelib_log(log._module) || return false  # if not spacelib, don't show.
+        log.group ≠ :telemetry && return true  # if not telemetry, do show
+        log.level ≥ Warn && return true # if telemetry warning, do show
+
+        # otherwise, only show sparingly.
+        if !haskey(history, log.id) || (Second(1) < now() - history[log.id])
+            # then we will log it, and update record of when we did
+            history[log.id] = now()
+            return true
+        else
+            return false
+        end
+    end
 end
 
 

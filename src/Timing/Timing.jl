@@ -1,5 +1,7 @@
 module Timing
 
-include("./time.jl")
+include("./delay.jl")
+
+export delay
 
 end

@@ -1,16 +1,25 @@
 using Logging
 import SpaceLib
 
-"""Special log macro for writing telemetry. Loggers can pick this up separately."""
+"""Silent telemetry"""
 macro telemetry(exs...)
     quote
-        @info $(exs...) _group=:telemetry
+        @debug $(esc(exs...)) _group=:telemetry
     end
 end
 
-"""Special log macro for writing telemetry. Loggers can pick this up separately."""
-macro telemetry_hidden(exs...)
+
+"""Rate-limited display telemetry"""
+macro telemetry_inform(exs...)
     quote
-        @debug $(exs...) _group=:telemetry
+        @info $(esc(exs...)) _group=:telemetry
+    end
+end
+
+
+"""Always-show telemetry"""
+macro telemetry_inform(exs...)
+    quote
+        @warn $(esc(exs...)) _group=:telemetry
     end
 end
