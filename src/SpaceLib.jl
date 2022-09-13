@@ -14,12 +14,10 @@ export Spacecraft, ProbeCore
 # export functions
 export connect_to_spacecraft, main
 
-
 include("types/core.jl")
 include("Telemetry/Telemetry.jl")
 include("Timing/Timing.jl")
 include("Control/Control.jl")
-
 
 function connect_to_spacecraft(name::String="Julia",
                                host::String="127.0.0.1",
