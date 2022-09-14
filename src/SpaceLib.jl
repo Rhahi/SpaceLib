@@ -38,6 +38,21 @@ function connect_to_spacecraft(name::String="Julia",
 end
 
 
+"""connect_to_spacecraft with automatic connection handling"""
+function connect_to_spacecraft(f::function,
+                               name::String="Julia",
+                               host::String="127.0.0.1",
+                               port::Int64=50000,
+                               stream_port::Int64=50001)
+    sp = connect_to_spacecraft(name, host, port, stream_port)
+    try
+        f(sp)
+    finally
+        close(sp.conn.conn)
+    end
+end
+
+
 function main(f::Function,
               name::String="Julia",
               host::String="127.0.0.1",
