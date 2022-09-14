@@ -14,4 +14,10 @@ function delay(sp::Spacecraft, seconds::Float64)
         end
     end
     @tracev 2 "Timed delay over"
+    return start
+end
+
+
+function delay(sp::Spacecraft, seconds::Int64)
+    delay(sp, convert(Float64, seconds))
 end
