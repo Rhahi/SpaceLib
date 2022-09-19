@@ -36,8 +36,8 @@ end
 function display_logger(level::LogLevel)
     logger = TerminalLogger(stderr, level)
     EarlyFilteredLogger(logger) do log
-        log.group ≠ :telemetry && return true           # if not telemetry, do show
-        log.level ≥ Info && return true                 # if telemetry info or higher, do show
+        log.group ≠ :telemetry && return true  # if not telemetry, do show
+        log.level ≥ Info && return true        # if telemetry info or higher, do show
         false
     end
 end
@@ -55,7 +55,7 @@ function filelogger_telemetry(io::IOStream)
 end
 
 
-"""Check if the log message is coming form our code. Ignore telemetry."""
+"""Filter out log spam"""
 function is_spacelib_log(_module)
     if root_module(_module) in (:KRPC, :ProtoBuf)
         return false
