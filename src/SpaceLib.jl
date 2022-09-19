@@ -39,7 +39,7 @@ end
 
 
 """connect_to_spacecraft with automatic connection handling"""
-function connect_to_spacecraft(f::function,
+function connect_to_spacecraft(f::Function,
                                name::String="Julia",
                                host::String="127.0.0.1",
                                port::Int64=50000,

@@ -57,10 +57,10 @@ end
 
 """Check if the log message is coming form our code. Ignore telemetry."""
 function is_spacelib_log(_module)
-    if root_module(_module) in (:KRPC, :SpaceLib, :MissionLib, :Main)
-        return true
+    if root_module(_module) in (:KRPC, :ProtoBuf)
+        return false
     end
-    return false
+    return true
 end
 
 
