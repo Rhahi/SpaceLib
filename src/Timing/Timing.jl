@@ -1,6 +1,6 @@
 module Timing
 
-include("./delay.jl")
+include("./on_time.jl")
 
 export delay
 

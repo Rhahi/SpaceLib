@@ -6,7 +6,7 @@ import KRPC.Interface.SpaceCenter.RemoteTypes as RemoteTypes
 import KRPC.Interface.SpaceCenter.Helpers as Helpers
 
 # export modules
-export Telemetry, Timing, Control
+export Telemetry, Timing, Control, Navigation
 
 # export types
 export Spacecraft, ProbeCore
