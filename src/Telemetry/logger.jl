@@ -57,7 +57,7 @@ end
 
 """Filter out log spam"""
 function is_spacelib_log(_module)
-    if root_module(_module) in (:KRPC, :ProtoBuf)
+    if root_module(_module) in (:ProtoBuf,)
         return false
     end
     return true

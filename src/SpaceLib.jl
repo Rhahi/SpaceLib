@@ -2,8 +2,8 @@ module SpaceLib
 
 using KRPC
 using Logging
-import KRPC.Interface.SpaceCenter.RemoteTypes as RemoteTypes
-import KRPC.Interface.SpaceCenter.Helpers as Helpers
+import KRPC.Interface.SpaceCenter.RemoteTypes as SCR
+import KRPC.Interface.SpaceCenter.Helpers as SCH
 
 # export modules
 export Telemetry, Timing, Control, Navigation
@@ -14,10 +14,13 @@ export Spacecraft, ProbeCore
 # export functions
 export connect_to_spacecraft, main
 
+
 include("types/core.jl")
+include("Navigation/Navigation.jl")
 include("Telemetry/Telemetry.jl")
 include("Timing/Timing.jl")
 include("Control/Control.jl")
+
 
 function connect_to_spacecraft(name::String="Julia",
                                host::String="127.0.0.1",
@@ -26,15 +29,10 @@ function connect_to_spacecraft(name::String="Julia",
     @debug "Connecting to spacecraft"
     conn = kerbal_connect(name, host, port, stream_port)
     @debug "Connection complete"
-    space_center = RemoteTypes.SpaceCenter(conn)
-    active_vessel = Helpers.ActiveVessel(space_center)
+    space_center = SCR.SpaceCenter(conn)
+    active_vessel = SCH.ActiveVessel(space_center)
     core = SpaceLib.find_core(active_vessel)
-    parts = Dict{String, RemoteTypes.Part}()
-    events = Dict{String, Condition}(
-        "launch" => Condition(),
-        "abort" => Condition(),
-    )
-    Spacecraft(conn, space_center, active_vessel, core, events, parts)
+    Spacecraft(conn, space_center, active_vessel, core)
 end
 
 
