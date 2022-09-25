@@ -27,7 +27,9 @@ function delay(sp::Spacecraft, seconds::Float64, name::String)
         @warn "Given time delay is shorter than time resolution (0.02 seconds)"
     end
     init, t₀, t₁ = true, missing, missing
+    acquire(sp, :stream)
     SpaceLib.Telemetry.stream(sp, (SC.get_UT(),)) do stream
+        release(sp, :stream)
         @withprogress name=name begin
             for (now,) in stream
                 if init
@@ -54,7 +56,9 @@ function delay(sp::Spacecraft, seconds::Float64)
         @warn "Given time delay is shorter than time resolution (0.02 seconds)"
     end
     init, t₀, t₁ = true, missing, missing
+    acquire(sp, :stream)
     SpaceLib.Telemetry.stream(sp, (SC.get_UT(),)) do stream
+        release(sp, :stream)
         for (now,) in stream
             if init
                 t₀ = now

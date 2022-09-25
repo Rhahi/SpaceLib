@@ -29,13 +29,13 @@ struct Spacecraft
     core::ProbeCore
     parts::Dict{Symbol, SCR.Part}
     events::Dict{Symbol, Condition}
-    lock::Base.Semaphore
+    lock::Dict{Symbol, Base.Semaphore}
 
     function Spacecraft(conn::KRPC.KRPCConnection, sc::SCR.SpaceCenter, ves::SCR.Vessel, core::ProbeCore)
         parts = Dict{Symbol, SCR.Part}()
         events = Dict{Symbol, Condition}(:lanunch => Condition(), :abort => Condition())
-        sem = Base.Semaphore(1)
-        new(conn, sc, ves, core, parts, events, sem)
+        semaphore = Dict{Symbol, Base.Semaphore}(:source => Base.Semaphore(1), :semaphore => Base.Semaphore(1))
+        new(conn, sc, ves, core, parts, events, semaphore)
     end
 end
 
@@ -61,4 +61,32 @@ function find_core(ves::SCR.Vessel)
     @warn "Could not find part with tag core, using the root part instead"
     part = SCH.All(SCH.Parts(ves))
     return ProbeCore(part, find_range_safety_trigger(part))
+end
+
+
+function release(sp::Spacecraft, lock::Symbol)
+    Base.release(sp.lock[lock])
+end
+
+
+function acquire(sp::Spacecraft, lock::Symbol)
+    Base.acquire(sp.lock[:semaphore])
+    if lock ∈ keys(sp.lock)
+        Base.acquire(sp.lock[lock])
+    else
+        sem = Base.Semaphore(1)
+        sp.lock[lock] = sem
+        Base.acquire(sem)
+    end
+    Base.release(sp.lock[:semaphore])
+end
+
+
+function acquire(f::Function, sp::Spacecraft, lock::Symbol)
+    acquire(sp, lock)
+    try
+        f(sp)
+    finally
+        release(sp, lock)
+    end
 end

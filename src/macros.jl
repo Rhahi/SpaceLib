@@ -1,4 +1,10 @@
-using Logging
+function restore_callsite_source_position!(expr, src)
+    @assert expr.head == :escape
+    @assert expr.args[1].head == :macrocall
+    @assert expr.args[1].args[2] isa LineNumberNode
+    expr.args[1].args[2] = src
+    return expr
+end
 
 
 """Silent telemetry"""
@@ -42,10 +48,16 @@ macro tracev(verbosity::Int, exs...)
 end
 
 
-function restore_callsite_source_position!(expr, src)
-    @assert expr.head == :escape
-    @assert expr.args[1].head == :macrocall
-    @assert expr.args[1].args[2] isa LineNumberNode
-    expr.args[1].args[2] = src
-    return expr
+macro semaphore(lock, sp, exs...)
+    error("this macro is not working correctly!")
+    quote
+        value = nothing
+        acquire($(esc(sp)), $lock)
+        try
+            value = $(esc(exs...))
+        finally
+            release($(esc(sp)), $lock)
+        end
+        value
+    end
 end

@@ -3,9 +3,10 @@ using SpaceLib
 
 
 function stream(sp::Spacecraft, calls::T) where {K, T<:Tuple{Vararg{RT where {S, P, R, RT<:KRPC.Request{S, P, R}}, K}}}
-    Base.acquire(sp.lock)
-    listener = KRPC.add_stream(sp.conn, calls)
-    Base.release(sp.lock)
+    listener = nothing
+    Base.acquire(sp.lock[:source]) do
+        listener = KRPC.add_stream(sp.conn, calls)
+    end
     listener
 end
 

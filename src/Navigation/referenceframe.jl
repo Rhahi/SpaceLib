@@ -5,7 +5,6 @@ using SpaceLib
 import KRPC.Interface.SpaceCenter.RemoteTypes as SCR
 import KRPC.Interface.SpaceCenter.Helpers as SCH
 
-
 """
 The reference frame that is fixed relative to the vessel, and orientated with the surface of the body being orbited. The origin is at
 the center of mass of the vessel.The axes rotate with the north and up directions on the surface of the body.The x-axis points in the

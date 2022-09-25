@@ -5,17 +5,20 @@ using Logging
 import KRPC.Interface.SpaceCenter.RemoteTypes as SCR
 import KRPC.Interface.SpaceCenter.Helpers as SCH
 
-# export modules
+# modules
 export Telemetry, Timing, Control, Navigation
 
-# export types
+# types
 export Spacecraft, ProbeCore
 
-# export functions
-export connect_to_spacecraft, main
+# functions
+export connect_to_spacecraft, main, acquire, release
 
+# macros
+export @telemetry, @telemetry_inform, @telemetry_warn, @trace, @tracev, @semaphore
 
 include("types/core.jl")
+include("macros.jl")
 include("Navigation/Navigation.jl")
 include("Telemetry/Telemetry.jl")
 include("Timing/Timing.jl")
@@ -74,5 +77,6 @@ function main(f::Function,
         end
     end
 end
+
 
 end # module SpaceLib
