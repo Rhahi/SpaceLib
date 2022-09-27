@@ -14,7 +14,7 @@ compass would point when on the surface).The z-axis points eastwards towards the
 surface of the body - east on a compass when on the surface).
 """
 function SRF(sp::Spacecraft)
-    SCH.SurfaceReferenceFrame(sp.ves)
+    sp.ves |> SurfaceReferenceFrame
 end
 
 
@@ -25,7 +25,7 @@ y-axis points in the direction of the vessel's velocity vector, relative to the 
 plane of the astronomical horizon.The x-axis is orthogonal to the other two axes.
 """
 function SVRF(sp::Spacecraft)
-    SCH.SurfaceVelocityReferenceFrame(sp.ves)
+    sp.ves |> SurfaceVelocityReferenceFrame
 end
 
 
@@ -38,17 +38,13 @@ the body towards the north pole.The z-axis points in an arbitrary direction
 through the equator.
 """
 function BCI(sp::Spacecraft)
-    orbit = SCH.Orbit(sp.ves)
-    body = SCH.Body(orbit)
-    SCH.NonRotatingReferenceFrame(body)
+    sp.ves |> SCH.Orbit |> SCH.Body |> SCH.NonRotatingReferenceFrame
 end
 
 
 """Body centered body focused frame in current body"""
 function BCBF(sp::Spacecraft)
-    orbit = SCH.Orbit(sp.ves)
-    body = SCH.Body(orbit)
-    SCH.ReferenceFrame(body)
+    sp.ves |> SCH.Orbit |> SCH.Body |> SCH.ReferenceFrame
 end
 
 
@@ -61,12 +57,12 @@ direction.The y-axis points in the orbital prograde direction.The z-axis points
 in the orbital normal direction.
 """
 function ORF(sp::Spacecraft)
-    SCH.OrbitalReferenceFrame(sp.ves)
+    sp.ves |> SCH.OrbitalReferenceFrame
 end
 
 
 function COMF(part::SCR.Part)
-    SCH.CenterOfMassReferenceFrame(part)
+    part |> SCH.CenterOfMassReferenceFrame
 end
 
 end
