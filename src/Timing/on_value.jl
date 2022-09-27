@@ -7,17 +7,13 @@ function delay_on_bedrock_altitude(sp::Spacecraft, target_alt::Real, timeout::Re
     acquire(sp, :stream)
     ecef = ReferenceFrame.BCBF(sp)
     flight = SpaceLib.Telemetry.get_flight(sp, ecef)
-    init, t₀, h₀, t₁, h₁ = true, missing, missing, missing, missing
-    SpaceLib.Telemetry.stream(sp, (SC.get_UT(), SC.Flight_get_BedrockAltitude(flight))) do stream
+    t₀, h₀, t₁, h₁ = missing, missing, missing, missing
+    telemetry_stream(sp, (SC.get_UT(), SC.Flight_get_BedrockAltitude(flight))) do stream
         release(sp, :stream)
+        t₀, h₀ = next(stream)
         for (now, alt,) in stream
-            if init
-                init = false
-                t₀ = now
-                h₀ = alt
-            end
-            h₁ = alt
             t₁ = now
+            h₁ = alt
             if h₀ > target_alt
                 alt ≤ target_alt && break
             else

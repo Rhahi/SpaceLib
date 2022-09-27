@@ -33,8 +33,14 @@ struct Spacecraft
 
     function Spacecraft(conn::KRPC.KRPCConnection, sc::SCR.SpaceCenter, ves::SCR.Vessel, core::ProbeCore)
         parts = Dict{Symbol, SCR.Part}()
-        events = Dict{Symbol, Condition}(:lanunch => Condition(), :abort => Condition())
-        semaphore = Dict{Symbol, Base.Semaphore}(:source => Base.Semaphore(1), :semaphore => Base.Semaphore(1))
+        events = Dict{Symbol, Condition}(
+            :lanunch => Condition(),
+            :abort => Condition(),
+            )
+        semaphore = Dict{Symbol, Base.Semaphore}(
+            :stream => Base.Semaphore(1),
+            :semaphore => Base.Semaphore(1),
+            )
         new(conn, sc, ves, core, parts, events, semaphore)
     end
 end
