@@ -12,11 +12,13 @@ function telemetry_stream(f::Function, sp::Spacecraft, calls::T) where {K, T<:Tu
     try
         f(listener)
     finally
+        acquire(sp, :stream)
         close(listener)
+        release(sp, :stream)
     end
 end
 
 
 function next(listener::KRPC.Listener)
-    KRPC.get_next_value(listener)
+    KRPC.next_value(listener)
 end
