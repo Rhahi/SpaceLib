@@ -10,7 +10,7 @@ module Telemetry
 export toggle_logger!
 
 # stream
-export stream
+export telemetry_stream, next
 
 include("format.jl")
 include("logger.jl")

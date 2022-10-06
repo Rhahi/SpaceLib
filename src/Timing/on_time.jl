@@ -10,32 +10,19 @@ macro time_resolution()
 end
 
 
-function delay(sp::Spacecraft, seconds::Int64)
-    delay(sp, convert(Float64, seconds))
-end
-
-
-function delay(sp::Spacecraft, seconds::Int64, name::String)
-    delay(sp, convert(Float64, seconds), name)
-end
-
-
 """Wait for in-game seconds to pass, with a progress bar"""
-function delay(sp::Spacecraft, seconds::Float64, name::String)
+function delay(sp::Spacecraft, seconds::Real, log::String)
     @tracev 1 "delaying for" seconds
     if seconds < 0.02
         @warn "Given time delay is shorter than time resolution (0.02 seconds)"
     end
-    init, t₀, t₁ = true, missing, missing
+    t₀, t₁ = missing, missing
     acquire(sp, :stream)
-    SpaceLib.Telemetry.stream(sp, (SC.get_UT(),)) do stream
+    telemetry_stream(sp, (SC.get_UT(),)) do stream
         release(sp, :stream)
-        @withprogress name=name begin
+        t₀, = next(stream)
+        @withprogress name=log begin
             for (now,) in stream
-                if init
-                    t₀ = now
-                    init = false
-                end
                 @logprogress min(1, (now-t₀) / seconds)
                 t₁ = now
                 (now - t₀) ≥ (seconds - @time_resolution) && break
@@ -50,20 +37,17 @@ end
 
 
 """Wait for in-game seconds to pass"""
-function delay(sp::Spacecraft, seconds::Float64)
+function delay(sp::Spacecraft, seconds::Real)
     @tracev 1 "delaying for" seconds
     if seconds < 0.02
         @warn "Given time delay is shorter than time resolution (0.02 seconds)"
     end
-    init, t₀, t₁ = true, missing, missing
+    t₀, t₁ = missing, missing
     acquire(sp, :stream)
-    SpaceLib.Telemetry.stream(sp, (SC.get_UT(),)) do stream
+    telemetry_stream(sp, (SC.get_UT(),)) do stream
         release(sp, :stream)
+        t₀, = next(stream)
         for (now,) in stream
-            if init
-                t₀ = now
-                init = false
-            end
             t₁ = now
             (now - t₀) ≥ (seconds - @time_resolution) && break
             yield()
