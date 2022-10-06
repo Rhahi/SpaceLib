@@ -4,7 +4,7 @@ using LoggingExtras
 import KRPC.Interface.SpaceCenter.Helpers as RC
 
 
-function stage(sp::Spacecraft)
+function stage!(sp::Spacecraft)
     @trace "Stage"
     acquire(sp, :stage)
     acquire(sp, :stream) do
