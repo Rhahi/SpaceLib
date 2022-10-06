@@ -2,6 +2,7 @@ using SpaceLib
 import KRPC.Interface.SpaceCenter.Helpers as RC
 
 
+"Set main pilot throttle of the spacecraft."
 function throttle!(sp::Spacecraft, value::Real)
     @tracev 1 "set throttle" th=value
     control = RC.Control(sp.ves)
