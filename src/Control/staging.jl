@@ -5,7 +5,7 @@ import KRPC.Interface.SpaceCenter.Helpers as RC
 
 
 function stage(sp::Spacecraft)
-    @tracev "Stage"
+    @trace "Stage"
     acquire(sp, :stage)
     RC.ActivateNextStage(RC.Control(sp.ves))
     @async begin
