@@ -2,6 +2,7 @@ module SpaceLib
 
 using KRPC
 using Logging
+import KRPC.Interface.SpaceCenter as SC
 import KRPC.Interface.SpaceCenter.RemoteTypes as SCR
 import KRPC.Interface.SpaceCenter.Helpers as SCH
 
@@ -35,7 +36,9 @@ function connect_to_spacecraft(name::String="Julia",
     space_center = SCR.SpaceCenter(conn)
     active_vessel = SCH.ActiveVessel(space_center)
     core = SpaceLib.find_core(active_vessel)
-    Spacecraft(conn, space_center, active_vessel, core)
+    sp = Spacecraft(conn, space_center, active_vessel, core)
+    @async start_time_server(sp)
+    sp
 end
 
 
@@ -50,6 +53,22 @@ function connect_to_spacecraft(f::Function,
         f(sp)
     finally
         close(sp.conn.conn)
+    end
+end
+
+
+function start_time_server(sp::Spacecraft)
+    acquire(sp, :stream)
+    try
+        listener = KRPC.add_stream(conn, (SC.get_UT(),))
+        release(sp, :stream)
+        for (met,) in listener
+            sp.met = met
+        end
+    catch e
+        error("the time server has suffered a critical error.")
+    finally
+        release(sp, :stream)
     end
 end
 
