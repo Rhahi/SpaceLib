@@ -1,10 +1,15 @@
 using SpaceLib
+using SpaceLib.Timing
 using LoggingExtras
 import KRPC.Interface.SpaceCenter.Helpers as RC
 
 
 function stage(sp::Spacecraft)
-    @infov 2 "Calling RC stage"
-    sleep(0.1)  # temporary: must wait for stage:ready condition
+    @tracev "Stage"
+    acquire(sp, :stage)
     RC.ActivateNextStage(RC.Control(sp.ves))
+    @async begin
+        delay(sp, 0.5625)  # Respect KSP "stagingCooldownTimer"
+        release(sp, :stage)
+    end
 end
