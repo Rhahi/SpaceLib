@@ -86,13 +86,3 @@ function acquire(sp::Spacecraft, lock::Symbol)
     end
     Base.release(sp.lock[:semaphore])
 end
-
-
-function acquire(f::Function, sp::Spacecraft, lock::Symbol)
-    acquire(sp, lock)
-    try
-        f(sp)
-    finally
-        release(sp, lock)
-    end
-end

@@ -16,9 +16,9 @@ stage in the middle of acquired :stream, directly call ActivateNextStage.
 function stage!(sp::Spacecraft)
     @trace "Stage"
     acquire(sp, :stage)
-    acquire(sp, :stream) do
-        RC.ActivateNextStage(RC.Control(sp.ves))
-    end
+    acquire(sp, :stream)
+    RC.ActivateNextStage(RC.Control(sp.ves))
+    release(sp, :stream)
     @async begin
         delay(sp, 0.5625)
         @tracev 2 "Stage is ready again"
