@@ -31,5 +31,10 @@ end
     @test SpaceLib.Telemetry.decompose_time(0) == ("0", "00", "00", "00", "")
     @test SpaceLib.Telemetry.decompose_time(1) == ("0", "00", "00", "01", "")
     @test SpaceLib.Telemetry.decompose_time(1.1) == ("0", "00", "00", "01", ".100")
+end
 
+
+@testset "UT" begin
+    @test Telemetry.format_UT(0) == "0 Day 00:00:00"
+    @test Telemetry.format_UT(86401.0006) == "1 Day 00:00:01.001"
 end
