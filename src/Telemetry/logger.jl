@@ -7,7 +7,7 @@ import SpaceLib
 function home_directory!(root::String, name::String)
     project_root = string(root, "/", name)
     mkpath(project_root)
-    directory_number = 0
+    directory_number = -1
     for (root, dirs, files) in walkdir(project_root)
         for d in dirs
             number = tryparse(Int64, d)
@@ -17,7 +17,7 @@ function home_directory!(root::String, name::String)
             end
         end
     end
-    home = string(project_root, "/", directory_number)
+    home = string(project_root, "/", directory_number+1)
     mkdir(home)
     home
 end
@@ -33,10 +33,11 @@ end
 """Enable file and terminal logging. Call the resulting function again to close io."""
 function toggle_logger!(root::String, name::String, level::LogLevel)
     home = home_directory!(root, name)
+    println(home)
     io = open(home*"/spacelib.log", "a")
     console = display_logger(level)
     spacelib = filelogger_spacelib(io)
-    tee = TeeLogger(telemetry, spacelib, console)
+    tee = TeeLogger(spacelib, console)
     filtered_tee = EarlyFilteredLogger(tee) do log is_spacelib_log(log._module) end
     global_logger(filtered_tee)
 
