@@ -23,21 +23,22 @@ function home_directory!(root::String, name::String)
 end
 
 
+"""Enable terminal logging"""
 function toggle_logger!(level::LogLevel)
     console = TerminalLogger(stderr, level)
-    filtered_tee = EarlyFilteredLogger(console) do log is_spacelib_log(log._module) end
+    filtered_tee = EarlyFilteredLogger(console) do log !is_in_blacklist(log._module) end
     global_logger(filtered_tee)
 end
 
 
-"""Enable file and terminal logging. Call the resulting function again to close io."""
+"""Enable file and terminal logging"""
 function toggle_logger!(root::String, name::String, level::LogLevel)
     home = home_directory!(root, name)
     io = open(home*"/spacelib.log", "a")
     console = TerminalLogger(stderr, level)
     spacelib = FileLogger(io)
     tee = TeeLogger(spacelib, console)
-    filtered_tee = EarlyFilteredLogger(tee) do log is_spacelib_log(log._module) end
+    filtered_tee = EarlyFilteredLogger(tee) do log !is_in_blacklist(log._module) end
     global_logger(filtered_tee)
 
     return io
@@ -45,11 +46,8 @@ end
 
 
 """Filter out log spam"""
-function is_spacelib_log(_module)
-    if root_module(_module) in (:ProtoBuf,)
-        return false
-    end
-    return true
+function is_in_blacklist(_module)
+    root_module(_module) in (:ProtoBuf,)
 end
 
 
