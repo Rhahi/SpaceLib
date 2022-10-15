@@ -36,17 +36,12 @@ function toggle_logger!(root::String, name::String, level::LogLevel)
     println(home)
     io = open(home*"/spacelib.log", "a")
     console = TerminalLogger(stderr, level)
-    spacelib = filelogger_spacelib(io)
+    spacelib = FileLogger(io)
     tee = TeeLogger(spacelib, console)
     filtered_tee = EarlyFilteredLogger(tee) do log is_spacelib_log(log._module) end
     global_logger(filtered_tee)
 
     return io
-end
-
-
-function filelogger_spacelib(io::IOStream)
-    FileLogger(io)
 end
 
 
