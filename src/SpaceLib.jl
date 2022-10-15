@@ -2,6 +2,7 @@ module SpaceLib
 
 using KRPC
 using Logging
+import KRPC.Interface.SpaceCenter as SC
 import KRPC.Interface.SpaceCenter.RemoteTypes as SCR
 import KRPC.Interface.SpaceCenter.Helpers as SCH
 
@@ -35,7 +36,10 @@ function connect_to_spacecraft(name::String="Julia",
     space_center = SCR.SpaceCenter(conn)
     active_vessel = SCH.ActiveVessel(space_center)
     core = SpaceLib.find_core(active_vessel)
-    Spacecraft(conn, space_center, active_vessel, core)
+    sp = Spacecraft(conn, space_center, active_vessel, core)
+    listener = start_time_server(sp)
+    @async start_time_updates(sp, listener)
+    sp
 end
 
 

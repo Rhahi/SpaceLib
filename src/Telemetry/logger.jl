@@ -3,6 +3,13 @@ using TerminalLoggers
 import SpaceLib
 
 
+function toggle_logger!(level::LogLevel)
+    console = display_logger(level)
+    filtered_tee = EarlyFilteredLogger(console) do log is_spacelib_log(log._module) end
+    global_logger(filtered_tee)
+end
+
+
 """Enable file and terminal logging. Call the resulting function again to close io."""
 function toggle_logger!(directory::String, filename::String, level::LogLevel)
     console = display_logger(level)
