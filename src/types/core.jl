@@ -22,7 +22,7 @@ struct Stream
 end
 
 
-struct Spacecraft
+mutable struct Spacecraft
     conn::KRPC.KRPCConnection
     sc::SCR.SpaceCenter
     ves::SCR.Vessel
@@ -30,7 +30,8 @@ struct Spacecraft
     parts::Dict{Symbol, SCR.Part}
     events::Dict{Symbol, Condition}
     lock::Dict{Symbol, Base.Semaphore}
-    met::Function
+    met::Float64
+    ut::Float64
 
     function Spacecraft(conn::KRPC.KRPCConnection,
                         sc::SCR.SpaceCenter,
@@ -45,7 +46,7 @@ struct Spacecraft
             :stream => Base.Semaphore(1),
             :semaphore => Base.Semaphore(1),
             )
-        new(conn, sc, ves, core, parts, events, semaphore, 0.)
+        new(conn, sc, ves, core, parts, events, semaphore, 0., 0.)
     end
 end
 
@@ -98,5 +99,28 @@ function acquire(f::Function, sp::Spacecraft, lock::Symbol)
         f(sp)
     finally
         release(sp, lock)
+    end
+end
+
+
+function start_time_server(sp::Spacecraft)
+    acquire(sp, :stream)
+    listener = KRPC.add_stream(sp.conn, (SC.get_UT(), SC.Vessel_get_MET(sp.ves)))
+    sp.ut, sp.met = KRPC.next_value(listener)
+    release(sp, :stream)
+    listener
+end
+
+
+function start_time_updates(sp::Spacecraft, listener::KRPC.Listener)
+    try
+        for (ut, met,) in listener
+            sp.ut = ut
+            sp.met = met
+        end
+    catch e
+        error("the time server has suffered a critical error.")
+    finally
+        close(listener)
     end
 end
