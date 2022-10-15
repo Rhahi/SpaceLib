@@ -45,13 +45,6 @@ function toggle_logger!(root::String, name::String, level::LogLevel)
 end
 
 
-function filelogger_telemetry(io::IOStream)
-    EarlyFilteredLogger(FileLogger(io)) do log
-        log.group == :telemetry
-    end
-end
-
-
 """Filter out log spam"""
 function is_spacelib_log(_module)
     if root_module(_module) in (:ProtoBuf,)
