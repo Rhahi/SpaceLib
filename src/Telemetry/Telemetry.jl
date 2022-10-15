@@ -4,6 +4,8 @@ Acquire telemetry for logging and for control
 
 module Telemetry
 
+using SpaceLib
+
 # format
 export format_MET, format_UT
 
@@ -13,6 +15,7 @@ export toggle_logger!
 # stream
 export telemetry_stream, next
 
+include("csv.jl")
 include("format.jl")
 include("logger.jl")
 include("stream.jl")

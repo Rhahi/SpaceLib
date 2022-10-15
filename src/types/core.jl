@@ -22,31 +22,46 @@ struct Stream
 end
 
 
-mutable struct Spacecraft
+mutable struct System
+    home::String
+    lock::Dict{Symbol, Base.Semaphore}
+    ios::Dict{Symbol, IOStream}
+    met::Float64
+    ut::Float64
+
+
+    function System(home::String="")
+        lock = Dict{Symbol, Base.Semaphore}(
+            :stream => Base.Semaphore(1),
+            :semaphore => Base.Semaphore(1),
+            :iostream => Base.Semaphore(1),
+            )
+        ios = Dict{Symbol, IOStream}()
+        new(home, lock, ios, 0., 0.)
+    end
+end
+
+
+struct Spacecraft
     conn::KRPC.KRPCConnection
     sc::SCR.SpaceCenter
     ves::SCR.Vessel
     core::ProbeCore
     parts::Dict{Symbol, SCR.Part}
     events::Dict{Symbol, Condition}
-    lock::Dict{Symbol, Base.Semaphore}
-    met::Float64
-    ut::Float64
+    system::System
 
     function Spacecraft(conn::KRPC.KRPCConnection,
                         sc::SCR.SpaceCenter,
                         ves::SCR.Vessel,
-                        core::ProbeCore,)
+                        core::ProbeCore,
+                        system::System)
         parts = Dict{Symbol, SCR.Part}()
         events = Dict{Symbol, Condition}(
             :lanunch => Condition(),
             :abort => Condition(),
             )
-        semaphore = Dict{Symbol, Base.Semaphore}(
-            :stream => Base.Semaphore(1),
-            :semaphore => Base.Semaphore(1),
-            )
-        new(conn, sc, ves, core, parts, events, semaphore, 0., 0.)
+        new(conn, sc, ves, core, parts, events, system)
     end
 end
 
@@ -76,37 +91,27 @@ end
 
 
 function release(sp::Spacecraft, lock::Symbol)
-    Base.release(sp.lock[lock])
+    Base.release(sp.system.lock[lock])
 end
 
 
 function acquire(sp::Spacecraft, lock::Symbol)
-    Base.acquire(sp.lock[:semaphore])
-    if lock ∈ keys(sp.lock)
-        Base.acquire(sp.lock[lock])
+    Base.acquire(sp.system.lock[:semaphore])
+    if lock ∈ keys(sp.system.lock)
+        Base.acquire(sp.system.lock[lock])
     else
         sem = Base.Semaphore(1)
-        sp.lock[lock] = sem
+        sp.system.lock[lock] = sem
         Base.acquire(sem)
     end
-    Base.release(sp.lock[:semaphore])
-end
-
-
-function acquire(f::Function, sp::Spacecraft, lock::Symbol)
-    acquire(sp, lock)
-    try
-        f(sp)
-    finally
-        release(sp, lock)
-    end
+    Base.release(sp.system.lock[:semaphore])
 end
 
 
 function start_time_server(sp::Spacecraft)
     acquire(sp, :stream)
     listener = KRPC.add_stream(sp.conn, (SC.get_UT(), SC.Vessel_get_MET(sp.ves)))
-    sp.ut, sp.met = KRPC.next_value(listener)
+    sp.system.ut, sp.system.met = KRPC.next_value(listener)
     release(sp, :stream)
     listener
 end
@@ -115,8 +120,8 @@ end
 function start_time_updates(sp::Spacecraft, listener::KRPC.Listener)
     try
         for (ut, met,) in listener
-            sp.ut = ut
-            sp.met = met
+            sp.system.ut = ut
+            sp.system.met = met
         end
     catch e
         error("the time server has suffered a critical error.")

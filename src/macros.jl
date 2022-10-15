@@ -7,30 +7,6 @@ function restore_callsite_source_position!(expr, src)
 end
 
 
-"""Silent telemetry"""
-macro telemetry(exs...)
-    quote
-        @debug $(exs...) _group=:telemetry
-    end
-end
-
-
-"""Rate-limited display telemetry"""
-macro telemetry_inform(exs...)
-    quote
-        @info $(exs...) _group=:telemetry
-    end
-end
-
-
-"""Always-show telemetry"""
-macro telemetry_warn(exs...)
-    quote
-        @warn $(exs...) _group=:telemetry
-    end
-end
-
-
 """Log messages for tracing execution. Only for rough information."""
 macro trace(exs...)
     return restore_callsite_source_position!(

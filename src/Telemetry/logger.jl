@@ -41,7 +41,7 @@ function toggle_logger!(root::String, name::String, level::LogLevel)
     filtered_tee = EarlyFilteredLogger(tee) do log !is_in_blacklist(log._module) end
     global_logger(filtered_tee)
 
-    return io
+    return home, io
 end
 
 
