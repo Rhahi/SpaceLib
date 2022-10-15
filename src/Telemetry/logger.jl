@@ -24,7 +24,7 @@ end
 
 
 function toggle_logger!(level::LogLevel)
-    console = display_logger(level)
+    console = TerminalLogger(stderr, level)
     filtered_tee = EarlyFilteredLogger(console) do log is_spacelib_log(log._module) end
     global_logger(filtered_tee)
 end
@@ -35,23 +35,13 @@ function toggle_logger!(root::String, name::String, level::LogLevel)
     home = home_directory!(root, name)
     println(home)
     io = open(home*"/spacelib.log", "a")
-    console = display_logger(level)
+    console = TerminalLogger(stderr, level)
     spacelib = filelogger_spacelib(io)
     tee = TeeLogger(spacelib, console)
     filtered_tee = EarlyFilteredLogger(tee) do log is_spacelib_log(log._module) end
     global_logger(filtered_tee)
 
     return io
-end
-
-
-function display_logger(level::LogLevel)
-    logger = TerminalLogger(stderr, level)
-    EarlyFilteredLogger(logger) do log
-        log.group ≠ :telemetry && return true  # if not telemetry, do show
-        log.level ≥ Info && return true        # if telemetry info or higher, do show
-        false
-    end
 end
 
 
