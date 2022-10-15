@@ -38,13 +38,14 @@ end
 
 """Wait for in-game seconds to pass"""
 function delay(sp::Spacecraft, seconds::Real)
-    @tracev 1 "delaying for" seconds
+    @trace "enter delay" seconds _group=:timing
     if seconds < 0.02
         @warn "Given time delay is shorter than time resolution (0.02 seconds)"
     end
     t₀, t₁ = missing, missing
     acquire(sp, :stream)
     telemetry_stream(sp, (SC.get_UT(),)) do stream
+        @tracev 1 "begin delay" seconds _group=:timing
         release(sp, :stream)
         t₀, = next(stream)
         for (now,) in stream
@@ -52,7 +53,7 @@ function delay(sp::Spacecraft, seconds::Real)
             (now - t₀) ≥ (seconds - @time_resolution) && break
             yield()
         end
-        @tracev 2 "sleep complete" requested=seconds actual=t₁-t₀
+        @tracev 1 "delay complete" requested=seconds actual=t₁-t₀ _group=:timing
     end
     t₀, t₁
 end

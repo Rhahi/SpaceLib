@@ -1,8 +1,9 @@
 using Test
+using SpaceLib
 using SpaceLib.Telemetry
 
 
-@testset "Logger" begin
+@testset "MET" begin
     @test Telemetry.format_MET(0) == "T+00:00:00"
     @test Telemetry.format_MET(1) == "T+00:00:01"
     @test Telemetry.format_MET(61) == "T+00:01:01"
@@ -23,4 +24,12 @@ using SpaceLib.Telemetry
     @inferred Telemetry.format_MET(12345678.901)
     @inferred Telemetry.format_MET(12345678.000)
     @inferred Telemetry.format_MET(12345678)
+end
+
+
+@testset "Time decomposing" begin
+    @test SpaceLib.Telemetry.decompose_time(0) == ("0", "00", "00", "00", "")
+    @test SpaceLib.Telemetry.decompose_time(1) == ("0", "00", "00", "01", "")
+    @test SpaceLib.Telemetry.decompose_time(1.1) == ("0", "00", "00", "01", ".100")
+
 end
