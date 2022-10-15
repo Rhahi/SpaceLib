@@ -33,7 +33,6 @@ end
 """Enable file and terminal logging. Call the resulting function again to close io."""
 function toggle_logger!(root::String, name::String, level::LogLevel)
     home = home_directory!(root, name)
-    println(home)
     io = open(home*"/spacelib.log", "a")
     console = TerminalLogger(stderr, level)
     spacelib = FileLogger(io)
