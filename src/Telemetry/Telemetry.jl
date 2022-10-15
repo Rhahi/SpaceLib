@@ -5,6 +5,7 @@ Acquire telemetry for logging and for control
 module Telemetry
 
 # format
+export format_MET, format_UT
 
 # logger
 export toggle_logger!
