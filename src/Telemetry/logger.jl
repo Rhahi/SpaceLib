@@ -3,6 +3,26 @@ using TerminalLoggers
 import SpaceLib
 
 
+"""Create home directory for this logging session"""
+function home_directory!(root::String, name::String)
+    project_root = string(root, "/", name)
+    mkpath(project_root)
+    directory_number = 0
+    for (root, dirs, files) in walkdir(project_root)
+        for d in dirs
+            number = tryparse(Int64, d)
+            isnothing(number) && continue
+            if number > directory_number
+                directory_number = number
+            end
+        end
+    end
+    home = string(project_root, "/", directory_number)
+    mkdir(home)
+    home
+end
+
+
 function toggle_logger!(level::LogLevel)
     console = display_logger(level)
     filtered_tee = EarlyFilteredLogger(console) do log is_spacelib_log(log._module) end
@@ -11,32 +31,16 @@ end
 
 
 """Enable file and terminal logging. Call the resulting function again to close io."""
-function toggle_logger!(directory::String, filename::String, level::LogLevel)
+function toggle_logger!(root::String, name::String, level::LogLevel)
+    home = home_directory!(root, name)
+    io = open(home*"/spacelib.log", "a")
     console = display_logger(level)
-
-    io1 = open(get_available_filename(directory, filename, "telemetry"), "a")
-    telemetry = filelogger_telemetry(io1)
-    io2 = open(get_available_filename(directory, filename, "spacelib"), "a")
-    spacelib = filelogger_spacelib(io2)
-
+    spacelib = filelogger_spacelib(io)
     tee = TeeLogger(telemetry, spacelib, console)
     filtered_tee = EarlyFilteredLogger(tee) do log is_spacelib_log(log._module) end
     global_logger(filtered_tee)
 
-    return io1, io2
-end
-
-
-function get_available_filename(directory::String, filename::String, suffix::String)
-    directory = rstrip(directory, '/')
-    number = 0
-    barename = directory * "/" * filename * "_" * suffix
-    path_to_test = barename * "_" * string(number)
-    while isfile(path_to_test * ".log")
-        number += 1
-        path_to_test = barename * "_" * string(number)
-    end
-    path_to_test * ".log"
+    return io
 end
 
 

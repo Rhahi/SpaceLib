@@ -65,8 +65,7 @@ function main(f::Function,
               stream_port::Int64=50001;
               log_path::String,
               log_level::LogLevel=LogLevel(0))
-    mkpath(log_path)
-    log_io = Telemetry.toggle_logger!(log_path, name, log_level)
+    io = Telemetry.toggle_logger!(log_path, name, log_level)
     sp = connect_to_spacecraft(name, host, port, stream_port)
     try
         @info "Begin program"
@@ -75,10 +74,8 @@ function main(f::Function,
     finally
         @debug "Disconecting KRPC"
         close(sp.conn.conn)
-        for io in log_io
-            @debug "Closing IO"
-            close(io)
-        end
+        @debug "Closing IO"
+        close(io)
     end
 end
 
