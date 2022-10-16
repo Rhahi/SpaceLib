@@ -24,16 +24,11 @@ macro tracev(verbosity::Int, exs...)
 end
 
 
-macro semaphore(lock, sp, exs...)
-    error("this macro is not working correctly!")
+macro acquire(sp, exs...)
     quote
-        value = nothing
-        acquire($(esc(sp)), $lock)
-        try
-            value = $(esc(exs...))
-        finally
-            release($(esc(sp)), $lock)
-        end
-        value
+        acquire($(esc(sp)), :stream)
+        res = $(esc(exs...))
+        release($(esc(sp)), :stream)
+        res
     end
 end

@@ -16,10 +16,10 @@ export Spacecraft, ProbeCore
 export connect_to_spacecraft, main, acquire, release
 
 # macros
-export @telemetry, @telemetry_inform, @telemetry_warn, @trace, @tracev, @semaphore
+export @telemetry, @telemetry_inform, @telemetry_warn, @trace, @tracev, @acquire
 
-include("spacecraft.jl")
 include("macros.jl")
+include("spacecraft.jl")
 include("Modules/Modules.jl")
 include("Navigation/Navigation.jl")
 include("Telemetry/Telemetry.jl")
