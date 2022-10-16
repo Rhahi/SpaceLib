@@ -18,8 +18,9 @@ export connect_to_spacecraft, main, acquire, release
 # macros
 export @telemetry, @telemetry_inform, @telemetry_warn, @trace, @tracev, @semaphore
 
-include("types/core.jl")
+include("spacecraft.jl")
 include("macros.jl")
+include("Modules/Modules.jl")
 include("Navigation/Navigation.jl")
 include("Telemetry/Telemetry.jl")
 include("Timing/Timing.jl")
@@ -37,10 +38,9 @@ function connect_to_spacecraft(name::String="Julia",
     @debug "Connection complete"
     space_center = SCR.SpaceCenter(conn)
     active_vessel = SCH.ActiveVessel(space_center)
-    core = SpaceLib.find_core(active_vessel)
-    sp = Spacecraft(conn, space_center, active_vessel, core, system)
-    listener = start_time_server(sp)
-    @async start_time_updates(sp, listener)
+    sp = Spacecraft(conn, space_center, active_vessel, system)
+    listener = Telemetry.start_time_server(sp)
+    @async Telemetry.start_time_updates(sp, listener)
     sp
 end
 
