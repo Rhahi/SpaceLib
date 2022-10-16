@@ -1,7 +1,3 @@
-using KRPC
-using SpaceLib
-
-
 function start_time_server(sp::Spacecraft)
     acquire(sp, :stream)
     listener = KRPC.add_stream(sp.conn, (SC.get_UT(), SC.Vessel_get_MET(sp.ves)))
@@ -33,19 +29,13 @@ function start_time_updates(sp::Spacecraft, listener::KRPC.Listener)
 end
 
 
-function telemetry_stream(sp::Spacecraft, calls::T) where {K, T<:Tuple{Vararg{RT where {S, P, R, RT<:KRPC.Request{S, P, R}}, K}}}
-    KRPC.add_stream(sp.conn, calls)
-end
-
-
-function telemetry_stream(f::Function, sp::Spacecraft, calls::T) where {K, T<:Tuple{Vararg{RT where {S, P, R, RT<:KRPC.Request{S, P, R}}, K}}}
-    listener = telemetry_stream(sp, calls)
+"""Wrapper for KRPC add_stream with do block."""
+function krpc_stream(f::Function, conn::KRPC.KRPCConnection, calls::T) where {K, T<:Tuple{Vararg{RT where {S, P, R, RT<:KRPC.Request{S, P, R}}, K}}}
+    listener = add_stream(conn, calls)
     try
         f(listener)
     finally
-        acquire(sp, :stream)
         close(listener)
-        release(sp, :stream)
     end
 end
 
