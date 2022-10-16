@@ -22,7 +22,7 @@ function stage!(sp::Spacecraft)
     @trace "stage!" met=sp.system.met
     @async begin
         delay(sp, 0.5625)
-        @trace "Stage is ready again" met=sp.system.met
+        @info "Stage is ready again" met=sp.system.met
         release(sp, :stage)
     end
 end
