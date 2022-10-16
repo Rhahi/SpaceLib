@@ -1,6 +1,10 @@
 module Core
 
 
+import KRPC.Interface.SpaceCenter.Helpers as SCH
+import KRPC.Interface.SpaceCenter.RemoteTypes as SCR
+
+
 struct ProbeCore
     core::SCR.Part
     range_safety!::Function
