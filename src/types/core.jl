@@ -28,6 +28,7 @@ mutable struct System
     ios::Dict{Symbol, IOStream}
     met::Float64
     ut::Float64
+    clocks::Vector{Channel{Float64}}
 
 
     function System(home::String="")
@@ -37,7 +38,8 @@ mutable struct System
             :iostream => Base.Semaphore(1),
             )
         ios = Dict{Symbol, IOStream}()
-        new(home, lock, ios, 0., 0.)
+        clocks = Vector{Channel{Float64}}()
+        new(home, lock, ios, 0., 0., clocks)
     end
 end
 
@@ -122,6 +124,14 @@ function start_time_updates(sp::Spacecraft, listener::KRPC.Listener)
         for (ut, met,) in listener
             sp.system.ut = ut
             sp.system.met = met
+            for (idx, c) in enumerate(sp.system.clocks)
+                try
+                    !isready(c) && put!(c, sp.system.ut)
+                catch e
+                    !isa(e, InvalidStateException) && error(e)
+                    deleteat!(sp.system.clocks, idx)
+                end
+            end
         end
     catch e
         error("the time server has suffered a critical error.")
