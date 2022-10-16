@@ -45,6 +45,15 @@ function toggle_logger!(root::String, name::String, level::LogLevel)
 end
 
 
+"""filter out items to be displayed only for console"""
+function is_in_file_blacklist(io)
+    logger = FileLogger(io)
+    EarlyFilteredLogger(logger) do log
+        !(log._group in (:pgbar, :nolog))
+    end
+end
+
+
 """Filter out log spam"""
 function is_in_blacklist(_module)
     root_module(_module) in (:ProtoBuf,)
