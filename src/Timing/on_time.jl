@@ -12,17 +12,15 @@ end
 
 """Wait for in-game seconds to pass, with a progress bar"""
 function delay(sp::Spacecraft, seconds::Real, log::String)
-    @tracev 1 "delaying for" seconds
     if seconds < 0.02
         @warn "Given time delay is shorter than time resolution (0.02 seconds)"
     end
     t₀, t₁ = missing, missing
-    acquire(sp, :stream)
-    telemetry_stream(sp, (SC.get_UT(),)) do stream
-        release(sp, :stream)
-        t₀, = next(stream)
+    ut_stream(sp) do stream
+        @tracev 2 "begin delay" met=sp.system.met seconds
+        t₀ = take!(stream)
         @withprogress name=log begin
-            for (now,) in stream
+            for now in stream
                 @logprogress min(1, (now-t₀) / seconds)
                 t₁ = now
                 (now - t₀) ≥ (seconds - @time_resolution) && break
@@ -30,7 +28,7 @@ function delay(sp::Spacecraft, seconds::Real, log::String)
             end
             @logprogress 1
         end
-        @tracev 2 "sleep complete" requested=seconds actual=t₁-t₀
+        @tracev 1 "delay complete" met=sp.system.met requested=seconds actual=t₁-t₀
     end
     t₀, t₁
 end
@@ -38,22 +36,19 @@ end
 
 """Wait for in-game seconds to pass"""
 function delay(sp::Spacecraft, seconds::Real)
-    @trace "enter delay" seconds _group=:timing
     if seconds < 0.02
         @warn "Given time delay is shorter than time resolution (0.02 seconds)"
     end
     t₀, t₁ = missing, missing
-    acquire(sp, :stream)
-    telemetry_stream(sp, (SC.get_UT(),)) do stream
-        @tracev 1 "begin delay" seconds _group=:timing
-        release(sp, :stream)
-        t₀, = next(stream)
-        for (now,) in stream
+    ut_stream(sp) do stream
+        @tracev 2 "begin delay" met=sp.system.met seconds
+        t₀ = take!(stream)
+        for now in stream
             t₁ = now
             (now - t₀) ≥ (seconds - @time_resolution) && break
             yield()
         end
-        @tracev 1 "delay complete" requested=seconds actual=t₁-t₀ _group=:timing
+        @tracev 1 "delay complete" met=sp.system.met requested=seconds actual=t₁-t₀
     end
     t₀, t₁
 end
