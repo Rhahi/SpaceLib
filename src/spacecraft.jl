@@ -9,7 +9,6 @@ mutable struct System
 
     function System(home::String="")
         lock = Dict{Symbol, Base.Semaphore}(
-            :stream => Base.Semaphore(1),
             :semaphore => Base.Semaphore(1),
             :iostream => Base.Semaphore(1),
             )
@@ -49,12 +48,15 @@ end
 
 function acquire(sp::Spacecraft, lock::Symbol)
     Base.acquire(sp.system.lock[:semaphore])
-    if lock ∈ keys(sp.system.lock)
-        Base.acquire(sp.system.lock[lock])
-    else
-        sem = Base.Semaphore(1)
-        sp.system.lock[lock] = sem
-        Base.acquire(sem)
+    try
+        if lock ∈ keys(sp.system.lock)
+            Base.acquire(sp.system.lock[lock])
+        else
+            sem = Base.Semaphore(1)
+            sp.system.lock[lock] = sem
+            Base.acquire(sem)
+        end
+    finally
+        Base.release(sp.system.lock[:semaphore])
     end
-    Base.release(sp.system.lock[:semaphore])
 end

@@ -1,9 +1,7 @@
 function setup__bedrock_altitude(sp::Spacecraft)
-    acquire(sp, :stream)
     ecef = ReferenceFrame.BCBF(sp)
-    flight = SpaceLib.Telemetry.get_flight(sp, ecef)
+    flight = SCH.Flight(sp.ves, ecef)
     listener = add_stream(sp.conn, (SC.Flight_get_BedrockAltitude(flight),))
-    release(sp, :stream)
     value::Float64, = next(listener)
     listener, sp.system.ut, missing, value, missing
 end

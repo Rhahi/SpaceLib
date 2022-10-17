@@ -22,13 +22,3 @@ macro tracev(verbosity::Int, exs...)
         __source__,
     )
 end
-
-
-macro acquire(sp, exs...)
-    quote
-        acquire($(esc(sp)), :stream)
-        res = $(esc(exs...))
-        release($(esc(sp)), :stream)
-        res
-    end
-end

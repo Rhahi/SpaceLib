@@ -1,8 +1,6 @@
 function start_time_server(sp::Spacecraft)
-    acquire(sp, :stream)
     listener = KRPC.add_stream(sp.conn, (SC.get_UT(), SC.Vessel_get_MET(sp.ves)))
     sp.system.ut, sp.system.met = KRPC.next_value(listener)
-    release(sp, :stream)
     listener
 end
 
