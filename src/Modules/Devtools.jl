@@ -9,7 +9,7 @@ function list_actions(part::SCR.Part)
     for m ∈ modules
         actions = SCH.Actions(m)
         println("Module[$(length(actions))]: ", SCH.Name(m))
-        for a in actions
+        for a ∈ actions
             println("  -> ", a)
         end
     end
@@ -22,7 +22,7 @@ function list_events(part::SCR.Part)
     for m ∈ modules
         events = SCH.Events(m)
         println("Module[$(length(events))]: ", SCH.Name(m))
-        for e in events
+        for e ∈ events
             println("  -> ", e)
         end
     end
@@ -35,7 +35,7 @@ function list_fields(part::SCR.Part)
     for m ∈ modules
         fields = SCH.Fields(m)
         println("Module[$(length(fields))]: ", SCH.Name(m))
-        for f in fields
+        for f ∈ fields
             println("  -> ", f)
         end
     end
@@ -44,6 +44,7 @@ end
 
 function list_info(part::SCR.Part)
     println(SCH.Title(part))
+    println("")
     list_actions(part)
     println("")
     list_events(part)
