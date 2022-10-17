@@ -93,6 +93,7 @@ julia> show(stdout, "text/plain", names(KRPC.Interface.SpaceCenter))
  :Camera_set_Mode
  :Camera_set_Pitch
  :CanRailsWarpAt
+ :CanRevertToLaunch
  :CargoBay_get_Open
  :CargoBay_get_Part
  :CargoBay_get_State
@@ -123,7 +124,9 @@ julia> show(stdout, "text/plain", names(KRPC.Interface.SpaceCenter))
  :CelestialBody_get_GravitationalParameter
  :CelestialBody_get_HasAtmosphere
  :CelestialBody_get_HasAtmosphericOxygen
+ :CelestialBody_get_HasSolidSurface
  :CelestialBody_get_InitialRotation
+ :CelestialBody_get_IsStar
  :CelestialBody_get_Mass
  :CelestialBody_get_Name
  :CelestialBody_get_NonRotatingReferenceFrame
@@ -279,12 +282,20 @@ julia> show(stdout, "text/plain", names(KRPC.Interface.SpaceCenter))
  :Control_set_WheelThrottle
  :Control_set_Wheels
  :Control_set_Yaw
+ :CreateKerbal
  :CrewMember_get_Badass
+ :CrewMember_get_CareerLogFlights
+ :CrewMember_get_CareerLogTargets
+ :CrewMember_get_CareerLogTypes
  :CrewMember_get_Courage
  :CrewMember_get_Experience
+ :CrewMember_get_Gender
  :CrewMember_get_Name
  :CrewMember_get_OnMission
+ :CrewMember_get_RosterStatus
  :CrewMember_get_Stupidity
+ :CrewMember_get_SuitType
+ :CrewMember_get_Trait
  :CrewMember_get_Type
  :CrewMember_get_Veteran
  :CrewMember_set_Badass
@@ -292,6 +303,7 @@ julia> show(stdout, "text/plain", names(KRPC.Interface.SpaceCenter))
  :CrewMember_set_Experience
  :CrewMember_set_Name
  :CrewMember_set_Stupidity
+ :CrewMember_set_SuitType
  :CrewMember_set_Veteran
  :Decoupler_Decouple
  :Decoupler_get_Decoupled
@@ -324,6 +336,7 @@ julia> show(stdout, "text/plain", names(KRPC.Interface.SpaceCenter))
  :EDrainModes
  :EGameMode
  :ELegState
+ :EMapFilterType
  :EMotorState
  :EParachuteState
  :ERadiatorState
@@ -444,6 +457,7 @@ julia> show(stdout, "text/plain", names(KRPC.Interface.SpaceCenter))
  :Force_set_ForceVector
  :Force_set_Position
  :Force_set_ReferenceFrame
+ :GetKerbal
  :Intake_get_Area
  :Intake_get_Flow
  :Intake_get_Open
@@ -452,6 +466,9 @@ julia> show(stdout, "text/plain", names(KRPC.Interface.SpaceCenter))
  :Intake_set_Open
  :LaunchClamp_Release
  :LaunchClamp_get_Part
+ :LaunchSite_get_Body
+ :LaunchSite_get_EditorFacility
+ :LaunchSite_get_Name
  :LaunchVessel
  :LaunchVesselFromSPH
  :LaunchVesselFromVAB
@@ -469,6 +486,7 @@ julia> show(stdout, "text/plain", names(KRPC.Interface.SpaceCenter))
  :Light_set_Active
  :Light_set_Color
  :Load
+ :LoadSpaceCenter
  :Module_GetField
  :Module_HasAction
  :Module_HasEvent
@@ -546,6 +564,7 @@ julia> show(stdout, "text/plain", names(KRPC.Interface.SpaceCenter))
  :Orbit_static_ReferencePlaneDirection
  :Orbit_static_ReferencePlaneNormal
  :Parachute_Arm
+ :Parachute_Cut
  :Parachute_Deploy
  :Parachute_get_Armed
  :Parachute_get_DeployAltitude
@@ -580,8 +599,10 @@ julia> show(stdout, "text/plain", names(KRPC.Interface.SpaceCenter))
  :Part_get_Experiment
  :Part_get_Experiments
  :Part_get_Fairing
+ :Part_get_FlagURL
  :Part_get_FuelLinesFrom
  :Part_get_FuelLinesTo
+ :Part_get_HasAvailableSeats
  :Part_get_HighlightColor
  :Part_get_Highlighted
  :Part_get_ImpactTolerance
@@ -632,6 +653,7 @@ julia> show(stdout, "text/plain", names(KRPC.Interface.SpaceCenter))
  :Part_get_Title
  :Part_get_Vessel
  :Part_get_Wheel
+ :Part_set_FlagURL
  :Part_set_Glow
  :Part_set_HighlightColor
  :Part_set_Highlighted
@@ -785,6 +807,7 @@ julia> show(stdout, "text/plain", names(KRPC.Interface.SpaceCenter))
  :Resources_set_Enabled
  :Resources_static_Density
  :Resources_static_FlowMode
+ :RevertToLaunch
  :RoboticController_AddAxis
  :RoboticController_AddKey
  :RoboticController_ClearAxis
@@ -853,6 +876,7 @@ julia> show(stdout, "text/plain", names(KRPC.Interface.SpaceCenter))
  :ScienceSubject_get_ScientificValue
  :ScienceSubject_get_SubjectValue
  :ScienceSubject_get_Title
+ :Screenshot
  :Sensor_get_Active
  :Sensor_get_Part
  :Sensor_get_Value
@@ -874,6 +898,7 @@ julia> show(stdout, "text/plain", names(KRPC.Interface.SpaceCenter))
  :Thruster_get_Gimballed
  :Thruster_get_Part
  :Thruster_get_ThrustReferenceFrame
+ :TransferCrew
  :TransformDirection
  :TransformPosition
  :TransformRotation
@@ -1007,6 +1032,8 @@ julia> show(stdout, "text/plain", names(KRPC.Interface.SpaceCenter))
  :get_Funds
  :get_G
  :get_GameMode
+ :get_LaunchSites
+ :get_MapFilter
  :get_MaximumRailsWarpFactor
  :get_Navball
  :get_PhysicsWarpFactor
@@ -1024,6 +1051,7 @@ julia> show(stdout, "text/plain", names(KRPC.Interface.SpaceCenter))
  :get_WarpRate
  :get_WaypointManager
  :set_ActiveVessel
+ :set_MapFilter
  :set_Navball
  :set_PhysicsWarpFactor
  :set_RailsWarpFactor

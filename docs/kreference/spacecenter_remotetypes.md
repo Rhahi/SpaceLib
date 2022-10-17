@@ -1,5 +1,5 @@
 julia> show(stdout, "text/plain", names(KRPC.Interface.SpaceCenter.RemoteTypes))
-60-element Vector{Symbol}:
+61-element Vector{Symbol}:
  :Alarm
  :AlarmClock
  :Antenna
@@ -25,6 +25,7 @@ julia> show(stdout, "text/plain", names(KRPC.Interface.SpaceCenter.RemoteTypes))
  :Force
  :Intake
  :LaunchClamp
+ :LaunchSite
  :Leg
  :Light
  :Module

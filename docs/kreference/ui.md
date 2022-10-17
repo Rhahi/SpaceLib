@@ -93,7 +93,7 @@ julia> show(stdout, "text/plain", names(KRPC.Interface.UI.RemoteTypes))
  :Text
  :UI
 
-julia> names(KRPC.Interface.UI.Helpers)
+julia> show(stdout, "text/plain", names(KRPC.Interface.UI.Helpers))
 54-element Vector{Symbol}:
  :AddButton
  :AddCanvas

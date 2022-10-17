@@ -1,5 +1,5 @@
 julia> show(stdout, "text/plain", names(KRPC.Interface.SpaceCenter.Helpers))
-737-element Vector{Symbol}:
+762-element Vector{Symbol}:
  :Abort
  :Abort!
  :Accept
@@ -86,10 +86,14 @@ julia> show(stdout, "text/plain", names(KRPC.Interface.SpaceCenter.Helpers))
  :CanCommunicate
  :CanRailsWarpAt
  :CanRestart
+ :CanRevertToLaunch
  :CanShutdown
  :CanTransmit
  :CanTransmitScience
  :Cancel
+ :CareerLogFlights
+ :CareerLogTargets
+ :CareerLogTypes
  :CargoBay
  :CargoBays
  :CargoBays!
@@ -123,6 +127,7 @@ julia> show(stdout, "text/plain", names(KRPC.Interface.SpaceCenter.Helpers))
  :Courage
  :Courage!
  :CreateHybrid
+ :CreateKerbal
  :CreateRelative
  :Crew
  :CrewCapacity
@@ -134,6 +139,7 @@ julia> show(stdout, "text/plain", names(KRPC.Interface.SpaceCenter.Helpers))
  :CurrentRPM
  :CurrentRequirement
  :CurrentStage
+ :Cut
  :Damping
  :Damping!
  :Data
@@ -185,6 +191,7 @@ julia> show(stdout, "text/plain", names(KRPC.Interface.SpaceCenter.Helpers))
  :EccentricAnomaly
  :EccentricAnomalyAtUT
  :Eccentricity
+ :EditorFacility
  :Elevation
  :Enabled
  :Enabled!
@@ -210,6 +217,8 @@ julia> show(stdout, "text/plain", names(KRPC.Interface.SpaceCenter.Helpers))
  :Fairing
  :Fairings
  :Fields
+ :FlagURL
+ :FlagURL!
  :Flight
  :Flow
  :FlowMode
@@ -237,9 +246,11 @@ julia> show(stdout, "text/plain", names(KRPC.Interface.SpaceCenter.Helpers))
  :GameMode
  :Gear
  :Gear!
+ :Gender
  :GetActionGroup
  :GetAlarms
  :GetField
+ :GetKerbal
  :GimbalAngle
  :GimbalLimit
  :GimbalLimit!
@@ -254,6 +265,7 @@ julia> show(stdout, "text/plain", names(KRPC.Interface.SpaceCenter.Helpers))
  :HasAction
  :HasAtmosphere
  :HasAtmosphericOxygen
+ :HasAvailableSeats
  :HasBrakes
  :HasContract
  :HasData
@@ -264,6 +276,7 @@ julia> show(stdout, "text/plain", names(KRPC.Interface.SpaceCenter.Helpers))
  :HasPart
  :HasResource
  :HasShield
+ :HasSolidSurface
  :HasSuspension
  :Heading
  :Heading!
@@ -309,6 +322,7 @@ julia> show(stdout, "text/plain", names(KRPC.Interface.SpaceCenter.Helpers))
  :IsFuelLine
  :IsGrounded
  :IsHome
+ :IsStar
  :IsVessel
  :Jettison
  :Jettisoned
@@ -319,6 +333,7 @@ julia> show(stdout, "text/plain", names(KRPC.Interface.SpaceCenter.Helpers))
  :LatitudeAtPosition
  :LaunchClamp
  :LaunchClamps
+ :LaunchSites
  :LaunchVessel
  :LaunchVesselFromSPH
  :LaunchVesselFromVAB
@@ -334,6 +349,7 @@ julia> show(stdout, "text/plain", names(KRPC.Interface.SpaceCenter.Helpers))
  :ListAxes
  :ListClosestApproaches
  :Load
+ :LoadSpaceCenter
  :Longitude
  :Longitude!
  :LongitudeAtPosition
@@ -349,6 +365,8 @@ julia> show(stdout, "text/plain", names(KRPC.Interface.SpaceCenter.Helpers))
  :MakeSOIAlarm
  :ManualFrictionControl
  :ManualFrictionControl!
+ :MapFilter
+ :MapFilter!
  :Mass
  :Massless
  :Max
@@ -501,6 +519,7 @@ julia> show(stdout, "text/plain", names(KRPC.Interface.SpaceCenter.Helpers))
  :Resources
  :ResourcesInDecoupleStage
  :Retrograde
+ :RevertToLaunch
  :ReynoldsNumber
  :Right
  :Right!
@@ -525,6 +544,7 @@ julia> show(stdout, "text/plain", names(KRPC.Interface.SpaceCenter.Helpers))
  :RollThreshold
  :RollThreshold!
  :Root
+ :RosterStatus
  :Rotation
  :RotationAngle
  :RotationLocked
@@ -544,6 +564,7 @@ julia> show(stdout, "text/plain", names(KRPC.Interface.SpaceCenter.Helpers))
  :ScienceSubject
  :ScienceValue
  :ScientificValue
+ :Screenshot
  :Seen
  :SemiMajorAxis
  :SemiMinorAxis
@@ -600,6 +621,8 @@ julia> show(stdout, "text/plain", names(KRPC.Interface.SpaceCenter.Helpers))
  :Stupidity
  :Stupidity!
  :SubjectValue
+ :SuitType
+ :SuitType!
  :SunExposure
  :SurfaceAltitude
  :SurfaceAltitude!
@@ -678,6 +701,8 @@ julia> show(stdout, "text/plain", names(KRPC.Interface.SpaceCenter.Helpers))
  :TractionControl!
  :TractionControlEnabled
  :TractionControlEnabled!
+ :Trait
+ :TransferCrew
  :TransformDirection
  :TransformPosition
  :TransformRotation
