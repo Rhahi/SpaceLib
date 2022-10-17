@@ -23,25 +23,25 @@ function home_directory(root::String, name::String)
 end
 
 
-"""Enable terminal logging"""
-function toggle_logger(level::LogLevel)
+"""Enable terminal logging only"""
+function toggle_logger(sp::Spacecraft, level::LogLevel)
     console = TerminalLogger(stderr, level)
     filtered_tee = EarlyFilteredLogger(console) do log !is_in_blacklist(log._module) end
-    global_logger(filtered_tee)
+    add_met = add_MET(sp, filtered_tee)
+    global_logger(add_met)
 end
 
 
 """Enable file and terminal logging"""
-function toggle_logger(root::String, name::String, level::LogLevel)
-    home = home_directory(root, name)
-    io = open(home*"/spacelib.log", "a")
+function toggle_logger!(sp::Spacecraft, level::LogLevel)
+    io = open(sp.system.home*"/spacelib.log", "a")
+    sp.system.ios[:file_logger] = io
     console = TerminalLogger(stderr, level)
     spacelib = FileLogger(io)
     tee = TeeLogger(spacelib, console)
     filtered_tee = EarlyFilteredLogger(tee) do log !is_in_blacklist(log._module) end
-    global_logger(filtered_tee)
-
-    return home, io
+    add_met = add_MET(sp, filtered_tee)
+    global_logger(add_met)
 end
 
 
@@ -67,4 +67,12 @@ function root_module(m::Module)
         gp = m
     end
     nameof(gp)
+end
+
+
+function add_MET(sp::Spacecraft, logger)
+    TransformerLogger(logger) do log
+        met = format_MET(sp.system.met)
+        merge(log, (; message = "$met | $(log.message)"))
+    end
 end

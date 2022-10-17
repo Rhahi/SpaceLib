@@ -14,13 +14,13 @@ Because this acquires :stream for activating next stage, if you somehow need to
 stage in the middle of acquired :stream, directly call ActivateNextStage.
 """
 function stage(sp::Spacecraft)
-    @tracev 2 "enter stage" met=sp.system.met
+    @tracev 2 "enter stage"
     acquire(sp, :stage)
     RC.ActivateNextStage(RC.Control(sp.ves))
-    @trace "stage!" met=sp.system.met
+    @trace "stage!"
     @async begin
         delay(sp, 0.5625)
-        @info "Stage is ready again" met=sp.system.met
+        @info "Stage is ready again"
         release(sp, :stage)
     end
 end

@@ -10,7 +10,7 @@ function delay(sp::Spacecraft, seconds::Real, log::String)
     end
     t₀, t₁ = missing, missing
     ut_stream(sp) do stream
-        @tracev 2 "begin delay" met=sp.system.met seconds
+        @tracev 2 "begin delay" seconds
         t₀ = take!(stream)
         @withprogress name=log begin
             for now in stream
@@ -21,7 +21,7 @@ function delay(sp::Spacecraft, seconds::Real, log::String)
             end
             @logprogress 1
         end
-        @tracev 1 "delay complete" met=sp.system.met requested=seconds actual=t₁-t₀
+        @tracev 1 "delay complete" requested=seconds actual=t₁-t₀
     end
     t₀, t₁
 end
@@ -34,14 +34,14 @@ function delay(sp::Spacecraft, seconds::Real)
     end
     t₀, t₁ = missing, missing
     ut_stream(sp) do stream
-        @tracev 2 "begin delay" met=sp.system.met seconds
+        @tracev 2 "begin delay" seconds
         t₀ = take!(stream)
         for now in stream
             t₁ = now
             (now - t₀) ≥ (seconds - @time_resolution) && break
             yield()
         end
-        @tracev 1 "delay complete" met=sp.system.met requested=seconds actual=t₁-t₀
+        @tracev 1 "delay complete" requested=seconds actual=t₁-t₀
     end
     t₀, t₁
 end
