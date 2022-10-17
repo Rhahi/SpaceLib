@@ -67,7 +67,7 @@ function main(f::Function,
               stream_port::Int64=50001;
               log_path::String,
               log_level::LogLevel=LogLevel(0))
-    home, io = Telemetry.toggle_logger!(log_path, name, log_level)
+    home, io = Telemetry.toggle_logger(log_path, name, log_level)
     system = System(home)
     system.ios[:file_logger] = io
     sp = connect_to_spacecraft(name, host, port, stream_port, system)

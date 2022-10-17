@@ -4,7 +4,7 @@ import SpaceLib
 
 
 """Create home directory for this logging session"""
-function home_directory!(root::String, name::String)
+function home_directory(root::String, name::String)
     project_root = string(root, "/", name)
     mkpath(project_root)
     directory_number = -1
@@ -24,7 +24,7 @@ end
 
 
 """Enable terminal logging"""
-function toggle_logger!(level::LogLevel)
+function toggle_logger(level::LogLevel)
     console = TerminalLogger(stderr, level)
     filtered_tee = EarlyFilteredLogger(console) do log !is_in_blacklist(log._module) end
     global_logger(filtered_tee)
@@ -32,8 +32,8 @@ end
 
 
 """Enable file and terminal logging"""
-function toggle_logger!(root::String, name::String, level::LogLevel)
-    home = home_directory!(root, name)
+function toggle_logger(root::String, name::String, level::LogLevel)
+    home = home_directory(root, name)
     io = open(home*"/spacelib.log", "a")
     console = TerminalLogger(stderr, level)
     spacelib = FileLogger(io)
