@@ -2,7 +2,7 @@ function setup__bedrock_altitude(sp::Spacecraft)
     ecef = ReferenceFrame.BCBF(sp)
     flight = SCH.Flight(sp.ves, ecef)
     listener = add_stream(sp.conn, (SC.Flight_get_BedrockAltitude(flight),))
-    value::Float64, = next(listener)
+    value::Float64, = next_value(listener)
     listener, sp.system.ut, missing, value, missing
 end
 
@@ -20,6 +20,7 @@ function delay__bedrock_altitude(sp::Spacecraft; target::Real, timeout::Real=-1)
         timeout > 0 && (t₁ - t₀) ≥ (timeout) && break
         yield()
     end
+    KRPC.close(listener)
     @tracev 2 "delay__bedrock_altitude complete" duration=t₁-t₀ altitude=h₁
     h₀, h₁
 end
@@ -42,6 +43,7 @@ function delay__bedrock_altitude(sp::Spacecraft, label::String; target::Real, ti
             yield()
         end
     end
+    KRPC.close(listener)
     @tracev 2 "delay__bedrock_altitude complete" duration=t₁-t₀ altitude=h₁
     h₀, h₁
 end

@@ -27,22 +27,6 @@ function start_time_updates(sp::Spacecraft, listener::KRPC.Listener)
 end
 
 
-"""Wrapper for KRPC add_stream with do block."""
-function krpc_stream(f::Function, conn::KRPC.KRPCConnection, calls::T) where {K, T<:Tuple{Vararg{RT where {S, P, R, RT<:KRPC.Request{S, P, R}}, K}}}
-    listener = add_stream(conn, calls)
-    try
-        f(listener)
-    finally
-        close(listener)
-    end
-end
-
-
-function next(listener::KRPC.Listener)
-    KRPC.next_value(listener)
-end
-
-
 function ut_stream(sp::Spacecraft)
     channel = Channel{Float64}(1)
     push!(sp.system.clocks, channel)

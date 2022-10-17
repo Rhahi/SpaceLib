@@ -2,7 +2,7 @@ module Timing
 
 using Logging
 using ProgressLogging
-using KRPC: add_stream
+using KRPC
 import KRPC.Interface.SpaceCenter as SC
 using SpaceLib, SpaceLib.Telemetry, SpaceLib.Navigation
 

@@ -23,6 +23,5 @@ include("csv.jl")
 include("format.jl")
 include("logger.jl")
 include("stream.jl")
-include("flight.jl")
 
 end
