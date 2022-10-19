@@ -26,7 +26,7 @@ end
 """Enable terminal logging only"""
 function toggle_logger(sp::Spacecraft, level::LogLevel)
     console = TerminalLogger(stderr, level)
-    filtered_tee = EarlyFilteredLogger(console) do log !is_in_blacklist(log._module) end
+    filtered_tee = filter_blacklist(console)
     add_met = add_MET(sp, filtered_tee)
     global_logger(add_met)
 end
@@ -37,9 +37,9 @@ function toggle_logger!(sp::Spacecraft, level::LogLevel)
     io = open(sp.system.home*"/spacelib.log", "a")
     sp.system.ios[:file_logger] = io
     console = TerminalLogger(stderr, level)
-    spacelib = FileLogger(io)
+    spacelib = is_in_file_blacklist(io)
     tee = TeeLogger(spacelib, console)
-    filtered_tee = EarlyFilteredLogger(tee) do log !is_in_blacklist(log._module) end
+    filtered_tee = filter_blacklist(tee)
     add_met = add_MET(sp, filtered_tee)
     global_logger(add_met)
 end
@@ -49,14 +49,16 @@ end
 function is_in_file_blacklist(io)
     logger = FileLogger(io)
     EarlyFilteredLogger(logger) do log
-        !(log._group in (:pgbar, :nolog))
+        !(log.group in (:pgbar, :nolog))
     end
 end
 
 
 """Filter out log spam"""
-function is_in_blacklist(_module)
-    root_module(_module) in (:ProtoBuf,)
+function filter_blacklist(logger)
+    EarlyFilteredLogger(logger) do log
+        !(root_module(log._module) in (:ProtoBuf,))
+    end
 end
 
 
