@@ -1,4 +1,4 @@
-module Core
+module PartCore
 
 
 import KRPC.Interface.SpaceCenter.Helpers as SCH
