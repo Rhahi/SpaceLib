@@ -4,6 +4,7 @@ using SpaceLib
 using KRPC
 import KRPC.Interface.SpaceCenter.Helpers as SCH
 import KRPC.Interface.SpaceCenter.RemoteTypes as SCR
+import ..@trigger_event
 
 
 @enum ParachuteState begin
@@ -17,12 +18,19 @@ end
 
 """Arm the parachute."""
 function arm(part::SCR.Part)
-    chute = SCH.Parachute(part)
+    part |> SCH.Parachute |> arm
+end
+
+
+"""Arm the parachute."""
+function arm(chute::SCR.Parachute)
     SCH.Arm(chute)
     @async begin
         sleep(1)
         if !SCH.Armed(chute)
-            @warn "Parachute was not armed successfully."
+            @warn "Parachute was not armed successfully. Retrying..."
+            part = SCH.Part(chute)
+            @trigger_event part "RealChuteModule" "Arm parachute"
         else
             @info "Parachute arm confirmed."
         end
