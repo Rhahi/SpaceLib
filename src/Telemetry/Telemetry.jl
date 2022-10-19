@@ -17,7 +17,7 @@ export format_MET, format_UT
 export toggle_logger!
 
 # stream
-export krpc_stream, next, ut_stream
+export krpc_stream, ut_stream
 
 include("csv.jl")
 include("format.jl")
