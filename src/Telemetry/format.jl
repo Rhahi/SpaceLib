@@ -29,8 +29,8 @@ end
 
 """Convert number of seconds into day, hour, minute, second, microsecond"""
 function decompose_time(t::Float64)
-    milliseconds = string(round(t % 1, digits=3))[2:end]
+    milliseconds = string(round(t % 1, digits=2))[2:end]
     seconds = convert(Int64, floor(t))
     D, H, M, S, _ = decompose_time(seconds)
-    D, H, M, S, rpad(milliseconds, 4, "0")
+    D, H, M, S, rpad(milliseconds, 3, "0")
 end
