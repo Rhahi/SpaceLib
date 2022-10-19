@@ -8,18 +8,17 @@ function delay(sp::Spacecraft, seconds::Real, log::String)
     if seconds < 0.02
         @warn "Given time delay is shorter than time resolution (0.02 seconds)"
     end
-    t₀, t₁ = missing, missing
+    t₀ = sp.system.ut
+    t₁ = t₀
     ut_stream(sp) do stream
         @tracev 2 "begin delay" seconds
-        t₀ = take!(stream)
         @withprogress name=log begin
-            for now in stream
-                @logprogress min(1, (now-t₀) / seconds)
-                t₁ = now
-                (now - t₀) ≥ (seconds - @time_resolution) && break
+            for t₁ in stream
+                @logprogress min(1, t₁-t₀ / seconds) _group=:pgbar
+                (t₁ - t₀) ≥ (seconds - @time_resolution) && break
                 yield()
             end
-            @logprogress 1
+            @logprogress 1 _group=:pgbar
         end
         @tracev 1 "delay complete" requested=seconds actual=t₁-t₀
     end
@@ -32,13 +31,12 @@ function delay(sp::Spacecraft, seconds::Real)
     if seconds < 0.02
         @warn "Given time delay is shorter than time resolution (0.02 seconds)"
     end
-    t₀, t₁ = missing, missing
+    t₀ = sp.system.ut
+    t₁ = t₀
     ut_stream(sp) do stream
         @tracev 2 "begin delay" seconds
-        t₀ = take!(stream)
-        for now in stream
-            t₁ = now
-            (now - t₀) ≥ (seconds - @time_resolution) && break
+        for t₁ in stream
+            (t₁ - t₀) ≥ (seconds - @time_resolution) && break
             yield()
         end
         @tracev 1 "delay complete" requested=seconds actual=t₁-t₀
