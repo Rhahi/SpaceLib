@@ -1,11 +1,18 @@
 using SpaceLib
-import KRPC.Interface.SpaceCenter.Helpers as RC
+import KRPC.Interface.SpaceCenter.Helpers as SCH
 
 
 "Set main pilot throttle of the spacecraft."
 function throttle(sp::Spacecraft, value::Real)
-    @tracev 1 "set throttle" th=value
-    control = RC.Control(sp.ves)
+    @log_entry "throttle: $value"
+    control = SCH.Control(sp.ves)
     target_value = clamp(value, 0., 1.)
-    RC.Throttle!(control, convert(Float32, target_value))
+    SCH.Throttle!(control, convert(Float32, target_value))
+    @log_exit "throttle: $value"
+end
+
+
+function throttle(sp::Spacecraft)
+    control = SCH.Control(sp.ves)
+    return SCH.Throttle(control)
 end

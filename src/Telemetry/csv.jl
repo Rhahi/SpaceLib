@@ -2,12 +2,14 @@
 function start_csv(path::String, headers::Tuple{Vararg{Symbol}})
     io = open(path, "a")
     write(io, "ut,met,"*join(headers, ',')*"\n")
+    @log_system "new CSV file created at $path"
     io
 end
 
 
 """Write telemetry information. Note: This does not escape comas!"""
 function telemetry(sp::Spacecraft, name::Symbol; entries...)
+    @log_entry "telemetry $name"
     acquire(sp, :iostream)
     if name ∉ keys(sp.system.ios)
         path = string(sp.system.home, '/', name, ".csv")

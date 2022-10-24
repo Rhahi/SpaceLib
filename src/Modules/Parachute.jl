@@ -28,11 +28,11 @@ function arm(chute::SCR.Parachute)
     @async begin
         sleep(1)
         if !SCH.Armed(chute)
-            @warn "Parachute was not armed successfully. Retrying..."
+            @log_attention "Parachute was not armed successfully. Retrying..."
             part = SCH.Part(chute)
             @trigger_event part "RealChuteModule" "Arm parachute"
         else
-            @info "Parachute arm confirmed."
+            @log_module "Parachute arm confirmed."
         end
     end
 end
