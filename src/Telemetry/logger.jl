@@ -1,6 +1,7 @@
 using Dates, Logging, LoggingExtras
 using TerminalLoggers
 import SpaceLib
+import Base: show, isless, convert
 
 
 """Create home directory for this logging session"""
@@ -25,9 +26,8 @@ end
 
 """Enable terminal logging only"""
 function toggle_logger(sp::Spacecraft, level::LogLevel)
-    console = TerminalLogger(stderr, level)
-    filtered_tee = filter_blacklist(console)
-    add_met = add_MET(sp, filtered_tee)
+    console = TerminalLogger(stderr, level) |> filter_module
+    add_met = add_MET(sp, console)
     global_logger(add_met)
 end
 
@@ -37,17 +37,15 @@ function toggle_logger!(sp::Spacecraft, level::LogLevel)
     io = open(sp.system.home*"/spacelib.log", "a")
     sp.system.ios[:file_logger] = io
     console = TerminalLogger(stderr, level)
-    spacelib = is_in_file_blacklist(io)
-    tee = TeeLogger(spacelib, console)
-    filtered_tee = filter_blacklist(tee)
-    add_met = add_MET(sp, filtered_tee)
+    spacelib = io |> FileLogger |> filter_group
+    tee = TeeLogger(spacelib, console) |> filter_module
+    add_met = add_MET(sp, tee)
     global_logger(add_met)
 end
 
 
 """filter out items to be displayed only for console"""
-function is_in_file_blacklist(io)
-    logger = FileLogger(io)
+function filter_group(logger)
     EarlyFilteredLogger(logger) do log
         !(log.group in (:pgbar, :nolog))
     end
@@ -55,7 +53,7 @@ end
 
 
 """Filter out log spam"""
-function filter_blacklist(logger)
+function filter_module(logger)
     EarlyFilteredLogger(logger) do log
         !(root_module(log._module) in (:ProtoBuf,))
     end
