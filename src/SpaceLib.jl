@@ -7,7 +7,7 @@ import KRPC.Interface.SpaceCenter.RemoteTypes as SCR
 import KRPC.Interface.SpaceCenter.Helpers as SCH
 
 # modules
-export Telemetry, Timing, Control, Navigation
+export Telemetry, Timing, Control, Navigation, Guidance
 
 # types
 export Spacecraft, ProbeCore
@@ -27,6 +27,7 @@ include("Navigation/Navigation.jl")
 include("Telemetry/Telemetry.jl")
 include("Timing/Timing.jl")
 include("Control/Control.jl")
+include("Guidance/Guidance.jl")
 
 
 """Manually connect to spacecraft"""
