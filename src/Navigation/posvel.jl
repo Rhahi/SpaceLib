@@ -1,17 +1,26 @@
-module PosVel
+function coordinate(sp::Spacecraft, ref::Symbol)
+    ref == :BCBF ? SCH.Position(sp.ves, ReferenceFrame.BCBF(sp)) :
+    error("Unknown reference")
+end
 
-using SpaceLib
-import KRPC.Interface.SpaceCenter.RemoteTypes as SCR
-import KRPC.Interface.SpaceCenter.Helpers as SCH
-
-function position(sp::Spacecraft, ref::SCR.ReferenceFrame)
+function coordinate(sp::Spacecraft, ref::SCR.ReferenceFrame)
     SCH.Position(sp.ves, ref)
 end
 
-
-function velocity(sp::Spacecraft, ref::SCR.ReferenceFrame)
-
+function velocity(sp::Spacecraft, ref::Symbol)
+    ref == :BCBF ? SCH.Velocity(sp.ves, ReferenceFrame.BCBF(sp)) :
+    error("Unknown reference")
 end
 
+function velocity(sp::Spacecraft, ref::SCR.ReferenceFrame)
+    SCH.Velocity(sp.ves, ref)
+end
 
-end  # module
+function direction(sp::Spacecraft, ref::Symbol)
+    ref == :BCBF ? SCH.Direction(sp.ves, ReferenceFrame.BCBF(sp)) :
+    error("Unknown reference")
+end
+
+function direction(sp::Spacecraft, ref::SCR.ReferenceFrame)
+    SCH.Direction(sp.ves, ref)
+end
