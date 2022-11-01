@@ -13,9 +13,10 @@ function delay(sp::Spacecraft, seconds::Real, log::String)
     t₁ = t₀
     ut_stream(sp) do stream
         @withprogress name=log begin
-            for t₁ in stream
-                @logprogress min(1, (t₁-t₀) / seconds) _group=:pgbar
-                (t₁ - t₀) ≥ (seconds - @time_resolution) && break
+            for now in stream
+                t₁ = now
+                @logprogress min(1, (now-t₀) / seconds) _group=:pgbar
+                (now - t₀) ≥ (seconds - @time_resolution) && break
                 yield()
             end
             @logprogress 1 _group=:pgbar
@@ -35,8 +36,9 @@ function delay(sp::Spacecraft, seconds::Real)
     t₀ = sp.system.ut
     t₁ = t₀
     ut_stream(sp) do stream
-        for t₁ in stream
-            (t₁ - t₀) ≥ (seconds - @time_resolution) && break
+        for now in stream
+            t₁ = now
+            (now - t₀) ≥ (seconds - @time_resolution) && break
             yield()
         end
         @log_timer "delay $seconds complete" requested=seconds actual=t₁-t₀
