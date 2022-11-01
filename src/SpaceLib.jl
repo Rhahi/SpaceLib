@@ -96,6 +96,7 @@ function close(sp::Spacecraft)
         Base.close(io)
     end
 end
+Base.close(sp::Spacecraft) = close(sp::Spacecraft)
 
 
 end # module SpaceLib
