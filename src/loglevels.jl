@@ -27,6 +27,7 @@ const LogEntry     = ExtraLogLevel(-300, "Entry")
 const LogGuidance  = ExtraLogLevel(-200, "Guidance")
 const LogDev       = ExtraLogLevel(-100, "🐞 Develop")
 # Info (0)
+const LogStatus    = ExtraLogLevel( 100, "Status")
 const LogModule    = ExtraLogLevel( 300, "🟦 Module")
 const LogSystem    = ExtraLogLevel( 400, "🟪 System")
 const LogOk        = ExtraLogLevel( 600, "🟩   OK  ")
@@ -81,6 +82,11 @@ end
 """guidance logs"""
 macro log_guidance(exs...)
     return restore_callsite_source_position!(esc(:($Base.@logmsg LogGuidance $(exs...))), __source__,)
+end
+
+"""general useful status info"""
+macro log_status(exs...)
+    return restore_callsite_source_position!(esc(:($Base.@logmsg LogStatus $(exs...))), __source__,)
 end
 
 """status info from a module"""
