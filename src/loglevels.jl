@@ -1,7 +1,3 @@
-import Logging: LogLevel, handle_message
-import Base: show, isless, convert
-
-
 function restore_callsite_source_position!(expr, src)
     @assert expr.head == :escape
     @assert expr.args[1].head == :macrocall
@@ -10,12 +6,10 @@ function restore_callsite_source_position!(expr, src)
     return expr
 end
 
-
 struct ExtraLogLevel
     level::Int32
     name::String
 end
-
 
 # Debug (-1000)
 const LogGraphic   = ExtraLogLevel(-900, "Graphic")
@@ -35,7 +29,6 @@ const LogMark      = ExtraLogLevel( 800, "🟧  Mark ")
 # Warn (1000)
 const LogAttention = ExtraLogLevel(1500, "🟨  OBS! ")
 # Error (2000)
-
 
 Base.isless(a::ExtraLogLevel, b::LogLevel) = isless(a.level, b.level)
 Base.isless(a::LogLevel, b::ExtraLogLevel) = isless(a.level, b.level)
@@ -113,7 +106,6 @@ end
 macro log_attention(exs...)
     return restore_callsite_source_position!(esc(:($Base.@logmsg LogAttention $(exs...))), __source__,)
 end
-
 
 # also notable colors: 208 for bright orange, 184 for middle yellow, 154 for mildly bright green, 87 for cyan
 function show_colors()
