@@ -1,15 +1,12 @@
 module PartCore
 
-
 import KRPC.Interface.SpaceCenter.Helpers as SCH
 import KRPC.Interface.SpaceCenter.RemoteTypes as SCR
-
 
 struct ProbeCore
     core::SCR.Part
     range_safety!::Function
 end
-
 
 function find_range_safety_trigger(part::SCR.Part)
     modules = SCH.Modules(part)
@@ -22,7 +19,6 @@ function find_range_safety_trigger(part::SCR.Part)
     error("Core part was not found")
 end
 
-
 function find_core(ves::SCR.Vessel)
     core_candidate = SCH.WithTag(SCH.Parts(ves), "core")
     if length(core_candidate) > 0
@@ -33,6 +29,5 @@ function find_core(ves::SCR.Vessel)
     part = SCH.All(SCH.Parts(ves))
     return ProbeCore(part, find_range_safety_trigger(part))
 end
-
 
 end
