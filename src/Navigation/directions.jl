@@ -23,8 +23,8 @@ east(::Tuple, north_or_pole, up) = -east(north_or_pole, up) |> hat |> V2T
 "Get a collection of basic directions. For use within KRPC."
 function directions(::Tuple, r; body=:earth)
     u = up(r)
-    e = east(::Tuple, pole(body), u)
-    n = north(::Tuple, u, e)
+    e = east(Tuple, pole(body), u)
+    n = north(Tuple, u, e)
     return u, e, n
 end
 
