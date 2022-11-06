@@ -1,9 +1,3 @@
-using Dates, Logging, LoggingExtras
-using TerminalLoggers
-import SpaceLib
-import Base: show, isless, convert
-
-
 """Create home directory for this logging session"""
 function home_directory(root::String, name::String)
     project_root = string(root, "/", name)
@@ -24,23 +18,24 @@ function home_directory(root::String, name::String)
 end
 
 
-"""Enable terminal logging only"""
-function toggle_logger(sp::Spacecraft, level::LogLevel)
-    console = TerminalLogger(stderr, level) |> filter_module
-    add_met = add_MET(sp, console)
-    global_logger(add_met)
+"""Get a tee logger with filters enabled"""
+function logger(sp::Spacecraft, level::LogLevel, save_file=false)
+    if save_file
+        io = open(sp.system.home*"/spacelib.log", "a")
+        sp.system.ios[:file_logger] = io
+        console = TerminalLogger(stderr, level)
+        spacelib = io |> FileLogger |> filter_group
+        tee = TeeLogger(spacelib, console) |> filter_module
+        add_met = add_MET(sp, tee)
+    else
+        console = TerminalLogger(stderr, level) |> filter_module
+        add_met = add_MET(sp, console)
+    end
 end
 
 
-"""Enable file and terminal logging"""
-function toggle_logger!(sp::Spacecraft, level::LogLevel)
-    io = open(sp.system.home*"/spacelib.log", "a")
-    sp.system.ios[:file_logger] = io
-    console = TerminalLogger(stderr, level)
-    spacelib = io |> FileLogger |> filter_group
-    tee = TeeLogger(spacelib, console) |> filter_module
-    add_met = add_MET(sp, tee)
-    global_logger(add_met)
+function simple_logger(level::LogLevel)
+    TerminalLogger(stderr, level) |> filter_module
 end
 
 
