@@ -60,3 +60,13 @@ function acquire(sp::Spacecraft, lock::Symbol)
         Base.release(sp.system.lock[:semaphore])
     end
 end
+
+macro asyncx(ex)
+    quote
+        Threads.@spawn try
+            $(esc(ex))
+        catch e
+            @error "Exception in task" exception=(e, catch_backtrace())
+        end
+    end
+end
