@@ -1,4 +1,4 @@
-function begin_direction_loop(ap::SCR.AutoPilot, sp::Spacecraft, ref, draw, color=nothing)
+function direction_sink(ap::SCR.AutoPilot, sp::Spacecraft, ref, draw, color=nothing)
     channel = Channel{AbstractVector{Float64}}(1)
     @asyncx begin
         try
@@ -28,7 +28,7 @@ function begin_direction_loop(ap::SCR.AutoPilot, sp::Spacecraft, ref, draw, colo
     channel
 end
 
-function begin_thrust_loop(control::SCR.Control)
+function thrust_sink(control::SCR.Control)
     channel = Channel{Real}(1)
     @asyncx begin
         try
@@ -47,7 +47,7 @@ function begin_thrust_loop(control::SCR.Control)
     channel
 end
 
-function begin_engage_loop(ap::SCR.AutoPilot)
+function engage_sink(ap::SCR.AutoPilot)
     channel = Channel{Bool}(1)
     @asyncx begin
         try
@@ -68,7 +68,7 @@ function begin_engage_loop(ap::SCR.AutoPilot)
 end
 
 
-function begin_roll_loop(ap::SCR.AutoPilot)
+function roll_sink(ap::SCR.AutoPilot)
     channel = Channel{Float64}(1)
     @asyncx begin
         try
