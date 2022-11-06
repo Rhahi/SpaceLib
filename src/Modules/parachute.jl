@@ -6,7 +6,6 @@ import KRPC.Interface.SpaceCenter.Helpers as SCH
 import KRPC.Interface.SpaceCenter.RemoteTypes as SCR
 import ..@trigger_event
 
-
 @enum ParachuteState begin
     STOWED=0
     ARMED=2
@@ -15,17 +14,15 @@ import ..@trigger_event
     CUT=8
 end
 
-
 """Arm the parachute."""
 function arm(part::SCR.Part)
     part |> SCH.Parachute |> arm
 end
 
-
 """Arm the parachute."""
 function arm(chute::SCR.Parachute)
     SCH.Arm(chute)
-    @async begin
+    @asyncx begin
         sleep(1)
         if !SCH.Armed(chute)
             @log_attention "Parachute was not armed successfully. Retrying..."
@@ -37,12 +34,10 @@ function arm(chute::SCR.Parachute)
     end
 end
 
-
 """Attempt to immediately deploy parachute."""
 function deploy(part::SCR.Part)
     part |> SCH.Parachute |> SCH.Deploy
 end
-
 
 function unarm(part::SCR.Part)
     chute = SCH.Parachute(part)
