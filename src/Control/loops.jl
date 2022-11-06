@@ -1,6 +1,6 @@
 function begin_direction_loop(ap::SCR.AutoPilot, sp::Spacecraft, ref, draw, color=nothing)
     channel = Channel{AbstractVector{Float64}}(1)
-    @async begin
+    @asyncx begin
         try
             @log_entry "begin direction loop"
             line = nothing
@@ -30,7 +30,7 @@ end
 
 function begin_thrust_loop(control::SCR.Control)
     channel = Channel{Real}(1)
-    @async begin
+    @asyncx begin
         try
             @log_entry "begin thrust loop"
             while true
@@ -49,7 +49,7 @@ end
 
 function begin_engage_loop(ap::SCR.AutoPilot)
     channel = Channel{Bool}(1)
-    @async begin
+    @asyncx begin
         try
             while true
                 cmd = take!(channel)

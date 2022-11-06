@@ -18,7 +18,7 @@ function stage!(sp::Spacecraft)
     acquire(sp, :stage)
     RC.ActivateNextStage(RC.Control(sp.ves))
     @log_status "stage"
-    @async begin
+    @asyncx begin
         delay(sp, 0.5625)
         @log_status "stage is ready again"
         release(sp, :stage)
