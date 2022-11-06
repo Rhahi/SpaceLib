@@ -7,7 +7,7 @@ function begin_direction_loop(ap::SCR.AutoPilot, sp::Spacecraft, ref, draw, colo
             wait(channel)
             if draw > 0
                 direction = SCH.Direction(sp.ves, ref)
-                line = Navigation.Drawing.add_direction!(sp, direction, ref; length=draw, color=color)
+                line = Navigation.Drawing.add_direction(sp, direction, ref; length=draw, color=color)
             end
             while true
                 cmd = take!(channel)
