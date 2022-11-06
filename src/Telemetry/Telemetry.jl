@@ -6,6 +6,11 @@ module Telemetry
 
 using KRPC
 using SpaceLib
+using Dates
+using Logging
+using LoggingExtras
+using TerminalLoggers
+import Base: show, isless, convert
 import KRPC.Interface.SpaceCenter as SC
 import KRPC.Interface.SpaceCenter.Helpers as SCH
 import KRPC.Interface.SpaceCenter.RemoteTypes as SCR
@@ -17,7 +22,7 @@ export format_MET, format_UT
 export toggle_logger!
 
 # stream
-export krpc_stream, ut_stream
+export ut_stream, ut_periodic_stream
 
 include("csv.jl")
 include("format.jl")
