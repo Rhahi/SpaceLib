@@ -4,7 +4,6 @@ function start_time_server(sp::Spacecraft)
     listener
 end
 
-
 function start_time_updates(sp::Spacecraft, listener::KRPC.Listener)
     try
         for (ut, met,) in listener
@@ -27,7 +26,6 @@ function start_time_updates(sp::Spacecraft, listener::KRPC.Listener)
     end
 end
 
-
 function ut_stream(sp::Spacecraft)
     @log_trace "time channel created"
     channel = Channel{Float64}(1)
@@ -35,12 +33,41 @@ function ut_stream(sp::Spacecraft)
     channel
 end
 
-
 function ut_stream(f::Function, sp::Spacecraft)
     channel = ut_stream(sp)
     try
         f(channel)
     finally
         close(channel)
+    end
+end
+
+function ut_periodic_stream(sp::Spacecraft, period::Real)
+    coarse_channel = Channel{Float64}(1)
+    fine_channel = ut_stream(sp)
+    last_update = 0.
+    @async begin
+        try
+            for now in fine_channel
+                if now - last_update > period
+                    if !isready(coarse_channel)
+                        put!(coarse_channel, now)
+                        last_update = now
+                    end
+                end
+            end
+        finally
+            close(fine_channel)
+        end
+    end
+    coarse_channel
+end
+
+function ut_periodic_stream(f::Function, sp::Spacecraft, period::Real)
+    coarse_channel = ut_periodic_stream(sp, period)
+    try
+        f(coarse_channel)
+    finally
+        close(coarse_channel)
     end
 end
