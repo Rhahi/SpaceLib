@@ -15,7 +15,6 @@ function list_actions(part::SCR.Part)
     end
 end
 
-
 function list_events(part::SCR.Part)
     modules = SCH.Modules(part)
     println("--- events ---")
@@ -28,7 +27,6 @@ function list_events(part::SCR.Part)
     end
 end
 
-
 function list_fields(part::SCR.Part)
     modules = SCH.Modules(part)
     println("--- fields ---")
@@ -40,7 +38,6 @@ function list_fields(part::SCR.Part)
         end
     end
 end
-
 
 function list_info(part::SCR.Part)
     println(SCH.Title(part))
