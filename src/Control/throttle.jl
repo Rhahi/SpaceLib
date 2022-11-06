@@ -10,8 +10,5 @@ function throttle!(sp::Spacecraft, value::Real)
     SCH.Throttle!(control, convert(Float32, target_value))
 end
 
-
-function throttle(sp::Spacecraft)
-    control = SCH.Control(sp.ves)
-    return SCH.Throttle(control)
-end
+throttle(control::SCR.Control) = SCH.Throttle(control)
+throttle(sp::Spacecraft) = throttle(SCH.Control(sp.ves))
