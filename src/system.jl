@@ -18,7 +18,6 @@ mutable struct System
     end
 end
 
-
 struct Spacecraft
     conn::KRPC.KRPCConnection
     sc::SCR.SpaceCenter
@@ -40,11 +39,9 @@ struct Spacecraft
     end
 end
 
-
 function release(sp::Spacecraft, lock::Symbol)
     Base.release(sp.system.lock[lock])
 end
-
 
 function acquire(sp::Spacecraft, lock::Symbol)
     Base.acquire(sp.system.lock[:semaphore])
