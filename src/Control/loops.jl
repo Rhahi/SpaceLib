@@ -66,3 +66,24 @@ function begin_engage_loop(ap::SCR.AutoPilot)
     end
     channel
 end
+
+
+function begin_roll_loop(ap::SCR.AutoPilot)
+    channel = Channel{Float64}(1)
+    @asyncx begin
+        try
+            while true
+                cmd = take!(channel)
+                @log_traceloop "target roll command issued: $(cmd)"
+                SCH.TargetRoll!(ap, F32(cmd))
+            end
+        catch e
+            if !isa(e, InvalidStateException)
+                @warn "Unexpected error during control loop: roll" e
+            end
+        finally
+            SCH.Disengage(ap)
+        end
+    end
+    channel
+end
