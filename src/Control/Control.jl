@@ -6,8 +6,9 @@ import KRPC.Interface.SpaceCenter.Helpers as SCH
 
 include("staging.jl")
 include("throttle.jl")
-include("loops.jl")
-include("commands.jl")
+include("sinks.jl")
+include("sources.jl")
+include("filters.jl")
 
 export stage!, throttle, throttle!
 export control_direction
