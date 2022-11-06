@@ -4,25 +4,16 @@
     NONE=4
 end
 
-"""
-    control_direction(sp::Spacecraft, ref::SCR.ReferenceFrame; draw=0, color=nothing)
-
-Native direction control loop using KRPC AutoPilot TargetDirection.
-"""
-function control_direction(sp::Spacecraft, ref::SCR.ReferenceFrame; draw=0, color=nothing)
-    @log_entry "direciton control: starting"
+function init_autopilot(sp::Spacecraft, ref::SCR.ReferenceFrame)
+    @log_entry "Initializing autopilot"
     control = SCH.Control(sp.ves)
+    ap = SCH.AutoPilot(sp.ves)
+    SCH.ReferenceFrame!(ap, ref)
     if sp.system.met == 0
-        @log_attention "Autopilot does not function while mission hasn't begin."
+        @log_attention "Autopilot does not function while mission hasn't begun."
     end
     if SCH.State(control).value |> ControlState ≠ FULL
         @log_attention "Vessel is not controllable, autopilot may not work."
     end
-    ap = SCH.AutoPilot(sp.ves)
-    SCH.ReferenceFrame!(ap, ref)
-    engage_channel = engage_sink(ap)
-    dir_channel = direction_sink(ap, sp, ref, draw)
-    th_channel = thrust_sink(control)
-    @log_exit "direction control: started"
-    return engage_channel, dir_channel, th_channel
+    return control, ap
 end

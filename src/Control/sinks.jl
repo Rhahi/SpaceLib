@@ -1,22 +1,28 @@
-function direction_sink(ap::SCR.AutoPilot, sp::Spacecraft, ref, draw, color=nothing)
-    channel = Channel{AbstractVector{Float64}}(1)
+"""
+- `line_length`: length of line to show. Set to 0 to disable.
+- `line_color`: color of line to show.
+"""
+function sink_direction(
+    sp::Spacecraft, ap::SCR.AutoPilot, ref::SCR.ReferenceFrame, input::Channel{NTuple{3, Float64}};
+    line_length=0, line_color=nothing
+)
     @asyncx begin
         try
             @log_entry "begin direction loop"
             line = nothing
-            wait(channel)
-            if draw > 0
+            wait(input)
+            if line_length > 0
                 direction = SCH.Direction(sp.ves, ref)
-                line = Navigation.Drawing.add_direction(sp, direction, ref; length=draw, color=color)
+                line = Navigation.Drawing.add_direction(sp, direction, ref; length=line_length, color=line_color)
             end
             while true
-                cmd = take!(channel)
-                target = V2T(cmd)
-                @log_traceloop "direction command issued: $target"
-                if draw > 0
-                    Navigation.Drawing.update_line!(line; dir=target)
+                cmd = take!(input)
+                @log_traceloop "direction command issued: $cmd"
+                if line_length > 0
+                    Navigation.Drawing.update_line!(line; dir=cmd)
                 end
-                SCH.TargetDirection!(ap, target)
+                SCH.TargetDirection!(ap, cmd)
+                yield()
             end
         catch e
             if !isa(e, InvalidStateException)
@@ -25,18 +31,18 @@ function direction_sink(ap::SCR.AutoPilot, sp::Spacecraft, ref, draw, color=noth
         end
         @log_exit "end direction loop"
     end
-    channel
+    nothing
 end
 
-function thrust_sink(control::SCR.Control)
-    channel = Channel{Real}(1)
+function sink_thrust(control::SCR.Control, input::Channel{Float32})
     @asyncx begin
         try
             @log_entry "begin thrust loop"
             while true
-                cmd = take!(channel)
+                cmd = take!(input)
                 @log_traceloop "throttle command issued: $cmd"
-                SCH.Throttle!(control, F32(cmd))
+                SCH.Throttle!(control, cmd)
+                yield()
             end
         catch e
             if !isa(e, InvalidStateException)
@@ -44,17 +50,17 @@ function thrust_sink(control::SCR.Control)
             end
         end
     end
-    channel
+    nothing
 end
 
-function engage_sink(ap::SCR.AutoPilot)
-    channel = Channel{Bool}(1)
+function sink_engage(ap::SCR.AutoPilot, input::Channel{Bool})
     @asyncx begin
         try
             while true
-                cmd = take!(channel)
+                cmd = take!(input)
                 @log_traceloop "$(cmd ? "" : "dis")engage command issued"
                 cmd ? SCH.Engage(ap) : SCH.Disengage(ap)
+                yield()
             end
         catch e
             if !isa(e, InvalidStateException)
@@ -64,18 +70,17 @@ function engage_sink(ap::SCR.AutoPilot)
             SCH.Disengage(ap)
         end
     end
-    channel
+    nothing
 end
 
-
-function roll_sink(ap::SCR.AutoPilot)
-    channel = Channel{Float64}(1)
+function sink_roll(ap::SCR.AutoPilot, input::Channel{Float32})
     @asyncx begin
         try
             while true
-                cmd = take!(channel)
+                cmd = take!(input)
                 @log_traceloop "target roll command issued: $(cmd)"
-                SCH.TargetRoll!(ap, F32(cmd))
+                SCH.TargetRoll!(ap, cmd)
+                yield()
             end
         catch e
             if !isa(e, InvalidStateException)
@@ -85,5 +90,5 @@ function roll_sink(ap::SCR.AutoPilot)
             SCH.Disengage(ap)
         end
     end
-    channel
+    nothing
 end
