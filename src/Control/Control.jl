@@ -14,8 +14,8 @@ include("filters.jl")
 export stage!, throttle, throttle!
 
 # control loop components
-export source_spin
-export filter_direction
+export init_autopilot
+export filter_direction, filter_spin
 export sink_direction, sink_roll, sink_engage, sink_thrust
 
 end
