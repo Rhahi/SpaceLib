@@ -17,7 +17,6 @@ function SRF(sp::Spacecraft)
     sp.ves |> SurfaceReferenceFrame
 end
 
-
 """
 The reference frame that is fixed relative to the vessel, and orientated with the velocity vector of the vessel relative to the surface
 of the body being orbited. The origin is at the center of mass of the vessel.The axes rotate with the vessel's velocity vector.The
@@ -27,7 +26,6 @@ plane of the astronomical horizon.The x-axis is orthogonal to the other two axes
 function SVRF(sp::Spacecraft)
     sp.ves |> SurfaceVelocityReferenceFrame
 end
-
 
 """
 The reference frame that is fixed relative to this celestial body, and
@@ -41,12 +39,10 @@ function BCI(sp::Spacecraft)
     sp.ves |> SCH.Orbit |> SCH.Body |> SCH.NonRotatingReferenceFrame
 end
 
-
 """Body centered body focused frame in current body"""
 function BCBF(sp::Spacecraft)
     sp.ves |> SCH.Orbit |> SCH.Body |> SCH.ReferenceFrame
 end
-
 
 """
 The reference frame that is fixed relative to the vessel, and orientated with
@@ -59,7 +55,6 @@ in the orbital normal direction.
 function ORF(sp::Spacecraft)
     sp.ves |> SCH.OrbitalReferenceFrame
 end
-
 
 function COMF(part::SCR.Part)
     part |> SCH.CenterOfMassReferenceFrame

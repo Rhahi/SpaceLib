@@ -1,7 +1,6 @@
 using SpaceLib
 import KRPC.Interface.SpaceCenter.Helpers as SCH
 
-
 "Set main pilot throttle of the spacecraft."
 function throttle!(sp::Spacecraft, value::Real)
     @log_trace "throttle: $value"

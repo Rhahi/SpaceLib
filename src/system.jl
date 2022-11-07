@@ -5,8 +5,6 @@ mutable struct System
     met::Float64
     ut::Float64
     clocks::Vector{Channel{Float64}}
-
-
     function System(home::String="")
         lock = Dict{Symbol, Base.Semaphore}(
             :semaphore => Base.Semaphore(1),
@@ -25,7 +23,6 @@ struct Spacecraft
     parts::Dict{Symbol, SCR.Part}
     events::Dict{Symbol, Condition}
     system::System
-
     function Spacecraft(conn::KRPC.KRPCConnection,
                         sc::SCR.SpaceCenter,
                         ves::SCR.Vessel,

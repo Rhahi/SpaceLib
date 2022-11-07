@@ -2,7 +2,6 @@ macro time_resolution()
     return Float64(0.019999999552965164 / 2)
 end
 
-
 """Wait for in-game seconds to pass, with a progress bar"""
 function delay(sp::Spacecraft, seconds::Real, log::String)
     @log_timer "delay $seconds with log"
@@ -25,7 +24,6 @@ function delay(sp::Spacecraft, seconds::Real, log::String)
     end
     t₀, t₁
 end
-
 
 """Wait for in-game seconds to pass"""
 function delay(sp::Spacecraft, seconds::Real)

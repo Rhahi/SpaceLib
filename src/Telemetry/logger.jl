@@ -17,7 +17,6 @@ function home_directory(root::String, name::String)
     home
 end
 
-
 """Get a tee logger with filters enabled"""
 function logger(sp::Spacecraft, level::LogLevel, save_file=false)
     if save_file
@@ -33,11 +32,9 @@ function logger(sp::Spacecraft, level::LogLevel, save_file=false)
     end
 end
 
-
 function simple_logger(level::LogLevel)
     TerminalLogger(stderr, level) |> filter_module
 end
-
 
 """filter out items to be displayed only for console"""
 function filter_group(logger)
@@ -46,14 +43,12 @@ function filter_group(logger)
     end
 end
 
-
 """Filter out log spam"""
 function filter_module(logger)
     EarlyFilteredLogger(logger) do log
         !(root_module(log._module) in (:ProtoBuf,))
     end
 end
-
 
 function root_module(m::Module)
     gp = m
@@ -63,7 +58,6 @@ function root_module(m::Module)
     end
     nameof(gp)
 end
-
 
 function add_MET(sp::Spacecraft, logger)
     TransformerLogger(logger) do log

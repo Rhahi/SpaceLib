@@ -8,14 +8,12 @@ function format_MET(t::Real)
     return "T+"*hms*ms
 end
 
-
 """Format UT seconds to # Day ##:##:##[.###] format."""
 function format_UT(t::Real)
     D, H, M, S, ms = decompose_time(t)
     hms = join([H, M, S], ':')
     return string(D, " Day ", hms, ms)
 end
-
 
 """Convert number of seconds into day, hour, minute, second."""
 function decompose_time(t::Int64)
@@ -25,7 +23,6 @@ function decompose_time(t::Int64)
     D = string(t ÷ 86400)
     D, H, M, S, ""
 end
-
 
 """Convert number of seconds into day, hour, minute, second, microsecond"""
 function decompose_time(t::Float64)
