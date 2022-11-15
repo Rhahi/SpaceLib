@@ -1,6 +1,7 @@
 module Drawing
 
 using SpaceLib
+using KerbalMath
 import KRPC.Interface.Drawing as D
 import KRPC.Interface.Drawing.RemoteTypes as DR
 import KRPC.Interface.Drawing.Helpers as DH

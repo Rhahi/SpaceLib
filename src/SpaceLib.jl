@@ -17,9 +17,6 @@ export Spacecraft
 # functions
 export connect_to_spacecraft, main, acquire, release
 
-# conversions
-export V2T, T2V, I64, I32, UI32, F64, F32
-
 # logging
 export @log_timer, @log_traceloop, @log_trace, @log_exit, @log_entry, @log_dev, @log_guidance
 export @log_status, @log_module, @log_system, @log_ok, @log_mark, @log_attention, @asyncx
@@ -27,7 +24,6 @@ export LogTimer, LogTraceLoop, LogTrace, LogExit, LogEntry, LogGuidance, LogDev
 export LogStatus, LogModule, LogSystem, LogOk, LogMark, LogAttention
 
 include("loglevels.jl")
-include("conversions.jl")
 include("system.jl")
 include("Modules/Modules.jl")
 include("Navigation/Navigation.jl")

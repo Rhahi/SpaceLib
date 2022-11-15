@@ -1,6 +1,7 @@
 module Navigation
 
 using SpaceLib
+using KerbalMath
 using LinearAlgebra
 import KRPC.Interface.SpaceCenter.RemoteTypes as SCR
 import KRPC.Interface.SpaceCenter.Helpers as SCH
@@ -11,7 +12,7 @@ include("posvel.jl")
 include("drawing.jl")
 
 export ReferenceFrame
-export directions, up, north, east
+export directionsₗ, up, northₗ, eastₗ
 export coordinate, velocity
 
 end
