@@ -6,7 +6,7 @@ import KRPC.Interface.Drawing as D
 import KRPC.Interface.Drawing.RemoteTypes as DR
 import KRPC.Interface.Drawing.Helpers as DH
 
-export add_direction, update_line!, clear
+export add_direction, update_line!, clear, remove!
 
 const COLORS = Dict{Symbol, NTuple{3, Float64}}(
     :W       => (1., 1., 1.),
@@ -47,15 +47,22 @@ end
 
 Update direction or line's direction/endpoint or color.
 """
-function update_line!(line; dir=nothing, color=nothing)
-    !isnothing(dir) && update_line_end!(line, dir)
-    !isnothing(color) && update_line_color!(line, color)
+function update_line!(line::DR.Line; dir=nothing, length=nothing, color=nothing)
+    if !isnothing(dir)
+        if !isnothing(length)
+            dir = hat(dir).*length
+        end
+        update_line_end!(line, dir)
+    end
+    !isnothing(color) && update_color!(line, color)
 end
 
-update_line_end!(line, dir) = DH.End!(line, V2T(dir))
-update_line_color!(line, color) = DH.Color!(line, color)
+update_line_end!(line::DR.Line, dir) = DH.End!(line, V2T(dir))
+update_color!(line::Union{DR.Line, DR.Polygon, DR.Text}, color) = DH.Color!(line, color)
 
 "Clear all drawing items on screen."
-clear(sp) = DH.Clear(sp.conn, false)
+clear(sp::Spacecraft) = DH.Clear(sp.conn, false)
+remove!(item::Union{DR.Line, DR.Polygon, DR.Text}) = DH.Remove(item)
+function remove!(item::Nothing) end
 
 end # module
