@@ -10,10 +10,10 @@ function init_autopilot(sp::Spacecraft, ref::SCR.ReferenceFrame)
     ap = SCH.AutoPilot(sp.ves)
     SCH.ReferenceFrame!(ap, ref)
     if sp.system.met == 0
-        @log_attention "Autopilot does not function while mission hasn't begun."
+        @log_trace "Autopilot initiated while mission hasn't begun"
     end
     if SCH.State(control).value |> ControlState ≠ FULL
-        @log_attention "Vessel is not controllable, autopilot may not work."
+        @log_trace "Autopilot initiated while vehicle is not controllable"
     end
     return control, ap
 end

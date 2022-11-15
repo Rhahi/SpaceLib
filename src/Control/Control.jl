@@ -17,7 +17,7 @@ export stage!, throttle, throttle!
 
 # control loop components
 export init_autopilot
-export filter_direction, filter_spin
+export filter_direction, filter_spin, filter_vector_limit
 export sink_direction, sink_roll, sink_engage, sink_thrust
 
 end

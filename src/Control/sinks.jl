@@ -7,19 +7,24 @@ function sink_direction(
     line_length=0, line_color=nothing
 )
     @asyncx begin
+        line = nothing
         try
             @log_entry "begin direction loop"
-            line = nothing
             wait(input)
-            if line_length > 0
-                direction = SCH.Direction(sp.ves, ref)
-                line = Navigation.Drawing.add_direction(sp, direction, ref; length=line_length, color=line_color)
-            end
             while true
                 cmd = take!(input)
+                if norm(cmd) == 0
+                    @warn "skipping direction command with 0-vector"
+                    yield()
+                    continue
+                end
                 @log_traceloop "direction command issued: $cmd"
                 if line_length > 0
-                    Navigation.Drawing.update_line!(line; dir=cmd)
+                    if isnothing(line)
+                        line = Navigation.Drawing.add_direction(sp, cmd, ref; length=line_length, color=line_color)
+                    else
+                        Navigation.Drawing.update_line!(line; dir=cmd, length=line_length)
+                    end
                 end
                 SCH.TargetDirection!(ap, cmd)
                 yield()
@@ -28,6 +33,9 @@ function sink_direction(
             if !isa(e, InvalidStateException)
                 @warn "Unexpected error during control loop: direction" e
             end
+        finally
+            Navigation.Drawing.remove!(line)
+            close(input)
         end
         @log_exit "end direction loop"
     end
@@ -48,6 +56,8 @@ function sink_thrust(control::SCR.Control, input::Channel{Float32})
             if !isa(e, InvalidStateException)
                 @warn "Unexpected error during control loop: thrust" e
             end
+        finally
+            close(input)
         end
     end
     nothing
@@ -58,7 +68,7 @@ function sink_engage(ap::SCR.AutoPilot, input::Channel{Bool})
         try
             while true
                 cmd = take!(input)
-                @log_traceloop "$(cmd ? "" : "dis")engage command issued"
+                @log_status "$(cmd ? "" : "dis")engage command issued"
                 cmd ? SCH.Engage(ap) : SCH.Disengage(ap)
                 yield()
             end
@@ -68,6 +78,7 @@ function sink_engage(ap::SCR.AutoPilot, input::Channel{Bool})
             end
         finally
             SCH.Disengage(ap)
+            close(input)
         end
     end
     nothing
@@ -87,7 +98,7 @@ function sink_roll(ap::SCR.AutoPilot, input::Channel{Float32})
                 @warn "Unexpected error during control loop: roll" e
             end
         finally
-            SCH.Disengage(ap)
+            close(input)
         end
     end
     nothing
