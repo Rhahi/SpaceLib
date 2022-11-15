@@ -15,7 +15,7 @@ function start_time_updates(sp::Spacecraft, listener::KRPC.Listener)
                 catch e
                     !isa(e, InvalidStateException) && error(e)
                     deleteat!(sp.system.clocks, idx)
-                    @log_trace "time channel removed"
+                    @log_timer "time channel removed"
                 end
             end
         end
@@ -27,7 +27,7 @@ function start_time_updates(sp::Spacecraft, listener::KRPC.Listener)
 end
 
 function ut_stream(sp::Spacecraft)
-    @log_trace "time channel created"
+    @log_timer "time channel created"
     channel = Channel{Float64}(1)
     push!(sp.system.clocks, channel)
     channel
