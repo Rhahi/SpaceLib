@@ -4,7 +4,12 @@ using SpaceLib.Control
 using SpaceLib.Modules.Engine
 import KRPC.Interface.SpaceCenter.Helpers as SCH
 
-connect_to_spacecraft() do sp
+connect_to_spacecraft("Test", LogLevel(2000)) do sp
+    @testset "Warmup" begin
+        throttle!(sp, 0.0)
+        throttle(sp)
+        Timing.delay(sp, 0.5)
+    end
     @testset "Main throttle control test" begin
         throttle!(sp, 0.5)
         Timing.delay(sp, 0.5)
@@ -17,14 +22,5 @@ connect_to_spacecraft() do sp
         throttle!(sp, 1)
         Timing.delay(sp, 0.5)
         @test throttle(sp) ≈ 1
-    end
-
-    @testset "Engine spinup test" begin
-        parts = SCH.Parts(sp.ves)
-        engine = SCH.WithTag(parts, "e1")[1] |> SCH.Engine
-        status, time_spent = ignite!(sp, engine; timeout=5)
-        @test status
-        @test 1 < time_spent < 3
-        @test SCH.Thrust(engine) > 10000
     end
 end
