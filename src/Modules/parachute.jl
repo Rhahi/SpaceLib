@@ -1,7 +1,8 @@
 module Parachute
 
-using SpaceLib
 using KRPC
+using SpaceLib
+using RemoteLogging.Terminal
 import KRPC.Interface.SpaceCenter.Helpers as SCH
 import KRPC.Interface.SpaceCenter.RemoteTypes as SCR
 import ..@trigger_event
@@ -42,7 +43,7 @@ end
 function unarm(part::SCR.Part)
     chute = SCH.Parachute(part)
     if SCH.State(chute).value |> ParachuteState ≠ ARMED
-        @warn "Parachute needs to be armed to be unarmed."
+        @log_warn "Parachute needs to be armed to be unarmed."
         return
     end
     @trigger_event part "RealChuteModule" "Disarm parachute"

@@ -1,5 +1,6 @@
 module PartCore
 
+using RemoteLogging.Terminal
 import KRPC.Interface.SpaceCenter.Helpers as SCH
 import KRPC.Interface.SpaceCenter.RemoteTypes as SCR
 
@@ -25,7 +26,7 @@ function find_core(ves::SCR.Vessel)
         part = core_candidate[1]
         return ProbeCore(part, find_range_safety_trigger(part))
     end
-    @warn "Could not find part with tag core, using the root part instead"
+    @log_warn "Could not find part with tag core, using the root part instead"
     part = SCH.All(SCH.Parts(ves))
     return ProbeCore(part, find_range_safety_trigger(part))
 end

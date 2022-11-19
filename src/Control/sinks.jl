@@ -14,7 +14,7 @@ function sink_direction(
             while true
                 cmd = take!(input)
                 if norm(cmd) == 0
-                    @warn "skipping direction command with 0-vector"
+                    @log_warn "skipping direction command with 0-vector"
                     yield()
                     continue
                 end
@@ -31,7 +31,7 @@ function sink_direction(
             end
         catch e
             if !isa(e, InvalidStateException)
-                @warn "Unexpected error during control loop: direction" e
+                @log_warn "Unexpected error during control loop: direction -- $e"
             end
         finally
             Navigation.Drawing.remove!(line)
@@ -54,7 +54,7 @@ function sink_thrust(control::SCR.Control, input::Channel{Float32})
             end
         catch e
             if !isa(e, InvalidStateException)
-                @warn "Unexpected error during control loop: thrust" e
+                @log_warn "Unexpected error during control loop: thrust -- $e"
             end
         finally
             close(input)
@@ -74,7 +74,7 @@ function sink_engage(ap::SCR.AutoPilot, input::Channel{Bool})
             end
         catch e
             if !isa(e, InvalidStateException)
-                @warn "Unexpected error during control loop: master" e
+                @log_warn "Unexpected error during control loop: master -- $e"
             end
         finally
             SCH.Disengage(ap)
@@ -95,7 +95,7 @@ function sink_roll(ap::SCR.AutoPilot, input::Channel{Float32})
             end
         catch e
             if !isa(e, InvalidStateException)
-                @warn "Unexpected error during control loop: roll" e
+                @log_warn "Unexpected error during control loop: roll -- $e"
             end
         finally
             close(input)

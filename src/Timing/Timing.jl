@@ -1,10 +1,9 @@
 module Timing
 
-using Logging
-using ProgressLogging
 using KRPC
 using SpaceLib
 using SpaceLib.Telemetry
+using RemoteLogging.Terminal
 import KRPC.Interface.SpaceCenter as SC
 import KRPC.Interface.SpaceCenter.Helpers as SCH
 

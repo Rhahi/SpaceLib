@@ -10,7 +10,7 @@ function filter_direction(sp::Spacecraft, input::Channel{Any}; period=0.05, offs
     @asyncx begin
         new_solution = take!(input)
         solution = new_solution
-        isnothing(solution) && @warn "Bad initial solution"
+        isnothing(solution) && @log_warn "Bad initial solution"
         try
             for _ in Telemetry.ut_periodic_stream(sp, period)
                 isopen(input) || break
@@ -29,7 +29,7 @@ function filter_direction(sp::Spacecraft, input::Channel{Any}; period=0.05, offs
             end
         catch e
             if !isa(e, InvalidStateException)
-                @warn "Unexpected error during filtering: direction" e
+                @log_warn "Unexpected error during filtering: direction -- $e"
             end
         finally
             close(input)
@@ -50,7 +50,7 @@ function filter_vector_limit(sp::Spacecraft, input::Channel{NTuple{3, Float64}};
             while true
                 vecto = take!(input)
                 if norm(vecfrom) == 0 || norm(vecto) == 0
-                    @warn "cannot find angle with zero vector, skipping to direct output"
+                    @log_warn "cannot find angle with zero vector, skipping to direct output"
                 else
                     now = sp.system.ut
                     Δθ = ∠θ(vecfrom, vecto)
@@ -68,7 +68,7 @@ function filter_vector_limit(sp::Spacecraft, input::Channel{NTuple{3, Float64}};
             end
         catch e
             if !isa(e, InvalidStateException)
-                @warn "Unexpected error during filtering: vector limit" e
+                @log_warn "Unexpected error during filtering: vector limit -- $e"
             end
         finally
             close(input)

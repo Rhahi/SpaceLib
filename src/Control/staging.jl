@@ -1,6 +1,5 @@
 using SpaceLib
 using SpaceLib.Timing
-using LoggingExtras
 import KRPC.Interface.SpaceCenter.Helpers as RC
 
 """
