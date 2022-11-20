@@ -6,6 +6,7 @@ using RemoteLogging
 import KRPC.Interface.SpaceCenter as SC
 import KRPC.Interface.SpaceCenter.RemoteTypes as SCR
 import KRPC.Interface.SpaceCenter.Helpers as SCH
+import Base: acquire, release, notify, wait
 
 # modules
 export Telemetry, Timing, Control, Navigation, Modules
@@ -14,10 +15,10 @@ export Telemetry, Timing, Control, Navigation, Modules
 export Spacecraft, LogLevel
 
 # functions
-export connect_to_spacecraft, test_spacecraft, main, acquire, release
+export connect_to_spacecraft, test_spacecraft, host_logger, acquire, release
 
 # macros
-export @asyncx
+export @asyncx, @importkrpc
 
 include("system.jl")
 include("connect.jl")

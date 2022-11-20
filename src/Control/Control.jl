@@ -1,11 +1,10 @@
 module Control
 
 using LinearAlgebra
+using SpaceLib
 using KerbalMath
 using RemoteLogging.Terminal
-import KRPC.Interface.SpaceCenter as SC
-import KRPC.Interface.SpaceCenter.RemoteTypes as SCR
-import KRPC.Interface.SpaceCenter.Helpers as SCH
+@importkrpc
 
 include("staging.jl")
 include("throttle.jl")

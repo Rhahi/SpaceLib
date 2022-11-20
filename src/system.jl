@@ -31,27 +31,26 @@ struct Spacecraft
         events = Dict{Symbol, Condition}(
             :lanunch => Condition(),
             :abort => Condition(),
-            )
+        )
         new(conn, sc, ves, parts, events, system)
     end
 end
 
-function release(sp::Spacecraft, lock::Symbol)
-    Base.release(sp.system.lock[lock])
-end
-
-function acquire(sp::Spacecraft, lock::Symbol)
-    Base.acquire(sp.system.lock[:semaphore])
+Base.notify(sp::Spacecraft, event::Symbol) = notify(sp.events[event])
+Base.wait(sp::Spacecraft, event::Symbol) = wait(sp.events[event])
+Base.release(sp::Spacecraft, lock::Symbol) = release(sp.system.lock[lock])
+function Base.acquire(sp::Spacecraft, lock::Symbol)
+    acquire(sp.system.lock[:semaphore])
     try
         if lock ∈ keys(sp.system.lock)
-            Base.acquire(sp.system.lock[lock])
+            acquire(sp.system.lock[lock])
         else
             sem = Base.Semaphore(1)
             sp.system.lock[lock] = sem
-            Base.acquire(sem)
+            acquire(sem)
         end
     finally
-        Base.release(sp.system.lock[:semaphore])
+        release(sp.system.lock[:semaphore])
     end
 end
 
@@ -62,5 +61,13 @@ macro asyncx(ex)
         catch e
             @error "Exception in task" exception=(e, catch_backtrace())
         end
+    end
+end
+
+macro importkrpc(exs...)
+    quote
+        esc(import KRPC.Interface.SpaceCenter as SC)
+        esc(import KRPC.Interface.SpaceCenter.RemoteTypes as SCR)
+        esc(import KRPC.Interface.SpaceCenter.Helpers as SCH)
     end
 end

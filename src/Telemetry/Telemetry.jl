@@ -8,9 +8,7 @@ using Dates
 using KRPC
 using SpaceLib
 using RemoteLogging.Terminal
-import KRPC.Interface.SpaceCenter as SC
-import KRPC.Interface.SpaceCenter.Helpers as SCH
-import KRPC.Interface.SpaceCenter.RemoteTypes as SCR
+@importkrpc
 
 # format
 export format_MET, format_UT

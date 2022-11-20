@@ -3,9 +3,8 @@ module Parachute
 using KRPC
 using SpaceLib
 using RemoteLogging.Terminal
-import KRPC.Interface.SpaceCenter.Helpers as SCH
-import KRPC.Interface.SpaceCenter.RemoteTypes as SCR
 import ..@trigger_event
+@importkrpc
 
 @enum ParachuteState begin
     STOWED=0
