@@ -13,5 +13,6 @@ include("on_value.jl")
 
 export delay
 export delay__bedrock_altitude
+export wait_for_true, wait_for_value
 
 end
