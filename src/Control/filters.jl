@@ -5,7 +5,7 @@
 - `period`: direction update interval.
 - `offset`: offset to apply when extracting velocity from solution.
 """
-function filter_direction(sp::Spacecraft, input::Channel{Any}; period=0.05, offset=0)
+function filter_solution_to_direction(sp::Spacecraft, input::Channel{Any}; period=0.05, offset=0)
     output = Channel{NTuple{3, Float64}}(1)
     @asyncx begin
         new_solution = take!(input)
