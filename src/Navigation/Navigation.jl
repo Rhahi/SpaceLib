@@ -4,7 +4,9 @@ using SpaceLib
 using KerbalMath
 using LinearAlgebra
 using RemoteLogging.Terminal
-@importkrpc
+import KRPC.Interface.SpaceCenter as SC
+import KRPC.Interface.SpaceCenter.RemoteTypes as SCR
+import KRPC.Interface.SpaceCenter.Helpers as SCH
 
 include("referenceframe.jl")
 include("directions.jl")

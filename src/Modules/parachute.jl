@@ -4,7 +4,9 @@ using KRPC
 using SpaceLib
 using RemoteLogging.Terminal
 import ..@trigger_event
-@importkrpc
+import KRPC.Interface.SpaceCenter as SC
+import KRPC.Interface.SpaceCenter.RemoteTypes as SCR
+import KRPC.Interface.SpaceCenter.Helpers as SCH
 
 @enum ParachuteState begin
     STOWED=0

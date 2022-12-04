@@ -4,7 +4,9 @@ using KRPC
 using SpaceLib
 using SpaceLib.Telemetry
 using RemoteLogging.Terminal
-@importkrpc
+import KRPC.Interface.SpaceCenter as SC
+import KRPC.Interface.SpaceCenter.RemoteTypes as SCR
+import KRPC.Interface.SpaceCenter.Helpers as SCH
 
 include("on_time.jl")
 include("on_value.jl")
