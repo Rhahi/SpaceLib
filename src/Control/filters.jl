@@ -122,3 +122,46 @@ function filter_spin(sp::Spacecraft, ref::SCR.ReferenceFrame, input::Channel{Flo
     end
     return output
 end
+
+function filter_merger(inputs::Channel{T}...) where T <: Any
+    output = Channel{T}(1)
+    for input in inputs
+        @asyncx begin
+            try
+                while true
+                    put!(output, take!(input))
+                end
+            catch e
+                if !isa(e, InvalidStateException)
+                    @log_warn "Unexpected error during merging -- $e"
+                end
+            finally
+                close(input)
+            end
+        end
+    end
+    return output
+end
+
+function filter_splitter(input::Channel{T}, count=2) where T <: Any
+    outputs = [Channel{T}(1) for _ in 1:count]
+    @asyncx begin
+        while true
+            try
+                value = take!(input)
+                for output in outputs
+                    if !isready(output)
+                        put!(output, value)
+                    end
+                end
+            catch e
+                if !isa(e, InvalidStateException)
+                    @log_warn "Unexpected error during splitting -- $e"
+                end
+            finally
+                close(input)
+            end
+        end
+    end
+    return outputs
+end
