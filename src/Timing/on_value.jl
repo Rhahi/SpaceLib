@@ -12,7 +12,7 @@ function delay__bedrock_altitude(sp::Spacecraft, name=nothing;
     @log_timer "delay__bedrock_altitude $target"
     listener, t₀, t₁, h₀, h₁ = setup__bedrock_altitude(sp)
     idv = progress_init(parentid, name)
-    idt = progress_init(idv, "⤷timeout")
+    idt = progress_subinit(idv, "⤷timeout")
     try
         for (alt,) in listener
             t₁ = sp.system.ut
