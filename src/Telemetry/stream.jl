@@ -4,6 +4,13 @@ function start_time_server(sp::Spacecraft)
     listener
 end
 
+function start_time_server(ts::Timeserver)
+    listener = KRPC.add_stream(ts.conn, (SC.get_UT(),))
+    ts.zero, = KRPC.next_value(listener)
+    ts.ut = ts.zero
+    listener
+end
+
 function start_time_updates(sp::Spacecraft, listener::KRPC.Listener)
     try
         for (ut, met,) in listener
@@ -19,7 +26,17 @@ function start_time_updates(sp::Spacecraft, listener::KRPC.Listener)
             end
         end
     catch e
-        error("the time server has suffered a critical error.")
+        error("the time server has suffered a critical error $e")
+    finally
+        close(listener)
+    end
+end
+
+function start_time_updates(ts::Timeserver, listener::KRPC.Listener)
+    try
+        for (ut,) in listener
+            ts.ut = ut
+        end
     finally
         close(listener)
     end

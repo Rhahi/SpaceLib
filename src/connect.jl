@@ -33,6 +33,16 @@ function connect_to_spacecraft(f::Function, name::String, log_level=LogLevel(-65
     nothing
 end
 
+function connect_to_timeserver(name::String="Timeserver";
+    host="127.0.0.1", port=50000, stream_port=50001
+)
+    conn = kerbal_connect(name, host, port, stream_port)
+    ts = Timeserver(conn)
+    listener = Telemetry.start_time_server(ts)
+    @asyncx Telemetry.start_time_updates(ts, listener)
+    return ts
+end
+
 function Base.close(sp::Spacecraft)
     @info "Disconecting KRPC"
     Base.close(sp.conn.conn)

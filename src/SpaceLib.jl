@@ -12,10 +12,11 @@ import Base: acquire, release, notify, wait
 export Telemetry, Timing, Control, Navigation, Modules
 
 # types
-export Spacecraft, LogLevel
+export Spacecraft, LogLevel, Timeserver
 
 # functions
-export connect_to_spacecraft, test_spacecraft, host_logger, acquire, release
+export connect_to_spacecraft, test_spacecraft, connect_to_timeserver
+export host_logger, acquire, release, zero!
 
 # macros
 export @asyncx, @importkrpc

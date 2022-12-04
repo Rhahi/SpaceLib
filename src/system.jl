@@ -16,6 +16,15 @@ mutable struct System
     end
 end
 
+
+mutable struct Timeserver
+    conn::KRPC.KRPCConnection
+    zero::Float64
+    ut::Float64
+    io::Union{IOStream, Nothing}
+    Timeserver(conn) = new(conn, 0, 0, nothing)
+end
+
 struct Spacecraft
     conn::KRPC.KRPCConnection
     sc::SCR.SpaceCenter
@@ -34,6 +43,10 @@ struct Spacecraft
         )
         new(conn, sc, ves, parts, events, system)
     end
+end
+
+function zero!(ts::Timeserver)
+    ts.zero = ts.ut
 end
 
 Base.notify(sp::Spacecraft, event::Symbol) = notify(sp.events[event])
