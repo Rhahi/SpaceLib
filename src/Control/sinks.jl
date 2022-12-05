@@ -42,7 +42,7 @@ function sink_direction(
     nothing
 end
 
-function sink_thrust(control::SCR.Control, input::Channel{Float32})
+function sink_throttle(control::SCR.Control, input::Channel{Float32})
     @asyncx begin
         try
             @log_entry "begin thrust loop"
