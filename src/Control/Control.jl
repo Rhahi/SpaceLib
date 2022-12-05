@@ -21,6 +21,6 @@ export stage!, throttle, throttle!
 export init_autopilot
 export filter_solution_to_direction, filter_spin, filter_vector_limit
 export filter_merger, filter_splitter
-export sink_direction, sink_roll, sink_engage, sink_thrust
+export sink_direction, sink_roll, sink_engage, sink_throttle, sink_injector
 
 end

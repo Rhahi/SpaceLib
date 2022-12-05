@@ -97,9 +97,29 @@ function sink_roll(ap::SCR.AutoPilot, input::Channel{Float32})
             if !isa(e, InvalidStateException)
                 @log_warn "Unexpected error during control loop: roll -- $e"
             end
+
+function sink_injector(main::Channel{T}, other::Channel{T}) where T <: Any
+    @asyncx begin
+        try
+            while true
+                put!(main, take!(other))
+                yield()
+            end
+        catch e
+            !isa(e, InvalidStateException) && error(e)
         finally
-            close(input)
+            close(other)
         end
+    end
+    nothing
+end
+
+function sink_injector(f::Function, main::Channel{T}, other::Channel{T}) where T <: Any
+    sink_injector(main, other)
+    try
+        f()
+    finally
+        close(other)
     end
     nothing
 end
