@@ -23,19 +23,19 @@ function directionsₗ(r; body=:earth)
     return u, e, n
 end
 
-function coordinate(sp::Spacecraft, ref::Symbol)
+function coordinate(sp::Spacecraft, ref::Symbol)::NTuple{3, Float64}
     ref == :BCBF ? SCH.Position(sp.ves, ReferenceFrame.BCBF(sp)) :
     error("Unknown reference")
 end
 coordinate(sp::Spacecraft, ref::SCR.ReferenceFrame) = SCH.Position(sp.ves, ref)
 
-function velocity(sp::Spacecraft, ref::Symbol)
+function velocity(sp::Spacecraft, ref::Symbol)::NTuple{3, Float64}
     ref == :BCBF ? SCH.Velocity(sp.ves, ReferenceFrame.BCBF(sp)) :
     error("Unknown reference")
 end
 velocity(sp::Spacecraft, ref::SCR.ReferenceFrame) = SCH.Velocity(sp.ves, ref)
 
-function direction(sp::Spacecraft, ref::Symbol)
+function direction(sp::Spacecraft, ref::Symbol)::NTuple{3, Float64}
     ref == :BCBF ? SCH.Direction(sp.ves, ReferenceFrame.BCBF(sp)) :
     error("Unknown reference")
 end
