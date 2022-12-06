@@ -42,10 +42,11 @@ end
 
 function Base.close(sp::Spacecraft)
     @info "Disconecting KRPC"
-    Base.close(sp.conn.conn)
-    for (_, io) in sp.system.ios
-        Base.close(io)
+    for io in values(sp.system.ios)
+        close(io)
     end
+    KRPC.close(sp.conn.conn)
+end
 
 function Base.close(ts::METServer)
     for client in ts.clients
