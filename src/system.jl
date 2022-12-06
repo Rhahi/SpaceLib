@@ -46,6 +46,7 @@ struct Spacecraft
                         ves::SCR.Vessel,
                         system::System)
         parts = Dict{Symbol, SCR.Part}()
+        events = Dict{Symbol, Condition}()
         stream, ut, met = Telemetry.start_time_server(conn, ves)
         ts = METServer(stream, ut, met)
         @asyncx Telemetry.start_time_updates(ts)
