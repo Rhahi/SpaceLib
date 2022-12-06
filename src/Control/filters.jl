@@ -5,26 +5,30 @@
 - `period`: direction update interval.
 - `offset`: offset to apply when extracting velocity from solution.
 """
-function filter_solution_to_direction(sp::Spacecraft, input::Channel{Any}; period=0.05, offset=0)
+function filter_solution_to_direction(sp::Spacecraft, input::Channel{Any};
+    period=0.05, offset=0, interpret::Function=(u)->V2T(view(u, 1:3))
+)
     output = Channel{NTuple{3, Float64}}(1)
     @asyncx begin
         new_solution = take!(input)
         solution = new_solution
-        isnothing(solution) && @log_warn "Bad initial solution"
+        isnothing(solution) && error("Bad initial solution")
         try
             for _ in Telemetry.ut_periodic_stream(sp, period)
+                # escape clause
                 isopen(input) || break
+
+                # take a new solution
                 if isready(input)
                     new_solution = take!(input)
-                    if !isnothing(new_solution)
-                        solution = new_solution
-                    end
+                    isnothing(solution) && break
+                    solution = new_solution
                 end
-                if !isnothing(solution)
-                    time = sp.system.met - offset
-                    u = solution(time)
-                    put!(output, V2T(view(u, 1:3)))
-                end
+
+                # output
+                time = sp.system.met - offset
+                u = solution(time)
+                put!(output, interpret(u))
                 yield()
             end
         catch e
