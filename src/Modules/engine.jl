@@ -65,9 +65,10 @@ function wait_for_thrust(sp::Spacecraft, engine::SCR.Engine, expected_thrust, ti
             end
         end
     end
-    time_spent = sp.system.ut - t_ignition
-    @log_exit "$title ignite!"
-    return ignition_ok, time_spent
+    @log_module "Time spent spinning up: $(sp.system.ut - t_ignition)s"
+    return ignition_ok
+end
+
 end
 
 end
