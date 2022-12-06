@@ -30,9 +30,7 @@ function sink_direction(
                 yield()
             end
         catch e
-            if !isa(e, InvalidStateException)
-                @log_warn "Unexpected error during control loop: direction -- $e"
-            end
+            !isa(e, InvalidStateException) && error(e)
         finally
             Navigation.Drawing.remove!(line)
             close(input)
@@ -53,9 +51,7 @@ function sink_throttle(control::SCR.Control, input::Channel{Float32})
                 yield()
             end
         catch e
-            if !isa(e, InvalidStateException)
-                @log_warn "Unexpected error during control loop: thrust -- $e"
-            end
+            !isa(e, InvalidStateException) && error(e)
         finally
             close(input)
         end
@@ -73,9 +69,7 @@ function sink_engage(ap::SCR.AutoPilot, input::Channel{Bool})
                 yield()
             end
         catch e
-            if !isa(e, InvalidStateException)
-                @log_warn "Unexpected error during control loop: master -- $e"
-            end
+            !isa(e, InvalidStateException) && error(e)
         finally
             SCH.Disengage(ap)
             close(input)
@@ -94,9 +88,13 @@ function sink_roll(ap::SCR.AutoPilot, input::Channel{Float32})
                 yield()
             end
         catch e
-            if !isa(e, InvalidStateException)
-                @log_warn "Unexpected error during control loop: roll -- $e"
-            end
+            !isa(e, InvalidStateException) && error(e)
+        finally
+            close(input)
+        end
+    end
+    nothing
+end
 
 function sink_injector(main::Channel{T}, other::Channel{T}) where T <: Any
     @asyncx begin

@@ -71,9 +71,7 @@ function filter_vector_limit(sp::Spacecraft, input::Channel{NTuple{3, Float64}};
                 yield()
             end
         catch e
-            if !isa(e, InvalidStateException)
-                @log_warn "Unexpected error during filtering: vector limit -- $e"
-            end
+            !isa(e, InvalidStateException) && error(e)
         finally
             close(input)
         end
@@ -136,9 +134,7 @@ function filter_merger(inputs::Channel{T}...) where T <: Any
                     put!(output, take!(input))
                 end
             catch e
-                if !isa(e, InvalidStateException)
-                    @log_warn "Unexpected error during merging -- $e"
-                end
+                !isa(e, InvalidStateException) && error(e)
             finally
                 close(input)
             end
@@ -159,9 +155,7 @@ function filter_splitter(input::Channel{T}, count=2) where T <: Any
                     end
                 end
             catch e
-                if !isa(e, InvalidStateException)
-                    @log_warn "Unexpected error during splitting -- $e"
-                end
+                !isa(e, InvalidStateException) && error(e)
             finally
                 close(input)
             end
