@@ -8,6 +8,8 @@ import KRPC.Interface.SpaceCenter.Helpers as SCH
 
 export ignite!, burn_time, wait_for_thrust, deltav
 
+const g = 9.80665  # grav acceleration, m/s²
+
 """
     ignite!(sp::Spacecraft, engine::SCR.Engine; expected_thrust=-1, timeout=-1, thrust_ratio=0.8)
 
@@ -97,7 +99,7 @@ Deviates from MJ value.
 function mass_flow_rate(engine::SCR.Engine)
     thv = SCH.MaxVacuumThrust(engine)
     isp = SCH.VacuumSpecificImpulse(engine)
-    ṁ = thv / isp / 9.80665
+    ṁ = thv / isp / g
 end
 
 """Available fuel mass, in kg. Computed from engine. 0.020 seconds to compute."""
