@@ -6,7 +6,7 @@ import KRPC.Interface.SpaceCenter as SC
 import KRPC.Interface.SpaceCenter.RemoteTypes as SCR
 import KRPC.Interface.SpaceCenter.Helpers as SCH
 
-export ignite!
+export ignite!, burn_time, wait_for_thrust, deltav
 
 """
     ignite!(sp::Spacecraft, engine::SCR.Engine; expected_thrust=-1, timeout=-1, thrust_ratio=0.8)
@@ -69,6 +69,42 @@ function wait_for_thrust(sp::Spacecraft, engine::SCR.Engine, expected_thrust, ti
     return ignition_ok
 end
 
+"""Rocket equation using specific impulse"""
+function deltav(isp::Real, m₀::Real, m₁::Real)
+    Δv = isp*g*log(m₀/m₁)
+end
+ΔV(isp::Real, m₀::Real, m₁::Real) = deltav(isp, m₀, m₁)
+
+"""
+Expected burn time of the engine, in seconds.
+Devates from MJ value. 0.12 seconds to compute.
+"""
+function burn_time(sp::Spacecraft, engine::SCR.Engine; count=1)
+    ṁ = mass_flow_rate(engine)
+    fuelmass = available_fuel_mass(sp, engine)
+    return fuelmass / ṁ / count
+end
+
+"""Burn time using already-known mass flow rate."""
+function burn_time(sp::Spacecraft, engine::SCR.Engine, ṁ::Real; count=1)
+    available_fuel_mass(sp, engine) / ṁ / count
+end
+
+"""
+Mass flow rate of engine.
+Deviates from MJ value.
+"""
+function mass_flow_rate(engine::SCR.Engine)
+    thv = SCH.MaxVacuumThrust(engine)
+    isp = SCH.VacuumSpecificImpulse(engine)
+    ṁ = thv / isp / 9.80665
+end
+
+"""Available fuel mass, in kg. Computed from engine. 0.020 seconds to compute."""
+function available_fuel_mass(sp, engine::SCR.Engine)
+    propellants = SCH.Propellants(engine)
+    rmin = minimum(SCH.TotalResourceAvailable(p) / SCH.Ratio(p) for p in propellants)
+    sum(rmin * SCH.Ratio(p) * SCH.Density(sp.conn, SCH.Name(p)) for p in propellants)
 end
 
 end
