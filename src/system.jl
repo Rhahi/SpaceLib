@@ -2,9 +2,6 @@ mutable struct System
     home::Union{Nothing, String}
     lock::Dict{Symbol, Base.Semaphore}
     ios::Dict{Symbol, IOStream}
-    met::Float64
-    ut::Float64
-    clocks::Vector{Channel{Float64}}
     function System(home=nothing)
         lock = Dict{Symbol, Base.Semaphore}(
             :semaphore => Base.Semaphore(1),
@@ -16,13 +13,24 @@ mutable struct System
     end
 end
 
+abstract type Timeserver end
 
-mutable struct Timeserver
-    conn::KRPC.KRPCConnection
-    zero::Float64
+mutable struct METServer <: Timeserver
+    stream::KRPC.Listener
+    offset::Float64
     ut::Float64
-    io::Union{IOStream, Nothing}
-    Timeserver(conn) = new(conn, 0, 0, nothing)
+    met::Float64
+    clients::Vector{Channel{Float64}}
+    METServer(stream, ut, met) = new(stream, 0, ut, met, Vector{Channel{Float64}}())
+end
+
+mutable struct UTServer <: Timeserver
+    conn::KRPC.KRPCConnection
+    stream::KRPC.Listener
+    offset::Float64
+    ut::Float64
+    clients::Vector{Channel{Float64}}
+    UTserver(conn, stream) = new(conn, stream, 0, 0, Vector{Channel{Float64}}())
 end
 
 struct Spacecraft
@@ -32,22 +40,21 @@ struct Spacecraft
     parts::Dict{Symbol, SCR.Part}
     events::Dict{Symbol, Condition}
     system::System
+    ts::METServer
     function Spacecraft(conn::KRPC.KRPCConnection,
                         sc::SCR.SpaceCenter,
                         ves::SCR.Vessel,
                         system::System)
         parts = Dict{Symbol, SCR.Part}()
-        events = Dict{Symbol, Condition}(
-            :lanunch => Condition(),
-            :abort => Condition(),
-        )
-        new(conn, sc, ves, parts, events, system)
+        stream, ut, met = Telemetry.start_time_server(conn, ves)
+        ts = METServer(stream, ut, met)
+        @asyncx Telemetry.start_time_updates(ts)
+        new(conn, sc, ves, parts, events, system, ts)
     end
 end
 
-function zero!(ts::Timeserver)
-    ts.zero = ts.ut
-end
+function zero!(ts::UTServer) ts.offset = ts.ut end
+function zero!(ts::METServer) ts.offset = ts.met end
 
 Base.notify(sp::Spacecraft, event::Symbol) = notify(sp.events[event])
 Base.wait(sp::Spacecraft, event::Symbol) = wait(sp.events[event])

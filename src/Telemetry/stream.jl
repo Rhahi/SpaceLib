@@ -1,56 +1,59 @@
-function start_time_server(sp::Spacecraft)
-    listener = KRPC.add_stream(sp.conn, (SC.get_UT(), SC.Vessel_get_MET(sp.ves)))
-    sp.system.ut, sp.system.met = KRPC.next_value(listener)
-    listener
+"Begin time server and return initial time and listener"
+function start_time_server(conn::KRPC.KRPCConnection, ves::SCR.Vessel)
+    listener = KRPC.add_stream(conn, (SC.get_UT(), SC.Vessel_get_MET(ves)))
+    ut, met = KRPC.next_value(listener)
+    return listener, ut, met
 end
 
-function start_time_server(ts::Timeserver)
-    listener = KRPC.add_stream(ts.conn, (SC.get_UT(),))
-    ts.zero, = KRPC.next_value(listener)
-    ts.ut = ts.zero
-    listener
+function start_time_server(conn::KRPC.KRPCConnection)
+    listener = KRPC.add_stream(conn, (SC.get_UT(),))
+    ut, = KRPC.next_value(listener)
+    return listener, ut
 end
 
-function start_time_updates(sp::Spacecraft, listener::KRPC.Listener)
+"Popualte the timeserver with latest time from KRPC"
+function start_time_updates(ts::Timeserver)
     try
-        for (ut, met,) in listener
-            sp.system.ut = ut
-            sp.system.met = met
-            for (idx, c) in enumerate(sp.system.clocks)
+        for time in ts.stream
+            update_timeserver!(ts, time)
+            idx_offset = 0
+            for (idx, c) in enumerate(ts.clients)
                 try
-                    !isready(c) && put!(c, sp.system.ut)
+                    !isready(c) && put!(c, ts.ut)
                 catch e
-                    !isa(e, InvalidStateException) && error(e)
-                    deleteat!(sp.system.clocks, idx)
+                    if !isa(e, InvalidStateException)
+                        @error "time server has crashed"
+                        error(e)
+                    end
+                    client = popat!(ts.clients, idx - idx_offset)
+                    idx_offset += 1
+                    close(client)
+                    deleteat!(ts.clients, idx)
                 end
             end
         end
-    catch e
-        error("the time server has suffered a critical error $e")
     finally
-        close(listener)
+        close(ts.stream)
     end
 end
 
-function start_time_updates(ts::Timeserver, listener::KRPC.Listener)
-    try
-        for (ut,) in listener
-            ts.ut = ut
-        end
-    finally
-        close(listener)
-    end
+function update_timeserver!(ts::METServer, time::Tuple{Float64, Float64})
+    (ts.ut, ts.met) = time
 end
 
-function ut_stream(sp::Spacecraft)
+function update_timeserver!(ts::UTServer, time::Tuple{Float64})
+    (ts.ut,) = time
+end
+
+function ut_stream(ts::Timeserver)
     @log_timer "time channel created"
     channel = Channel{Float64}(1)
-    push!(sp.system.clocks, channel)
+    push!(ts.clients, channel)
     channel
 end
 
-function ut_stream(f::Function, sp::Spacecraft)
-    channel = ut_stream(sp)
+function ut_stream(f::Function, ts::Timeserver)
+    channel = ut_stream(ts)
     try
         f(channel)
     finally
@@ -58,14 +61,16 @@ function ut_stream(f::Function, sp::Spacecraft)
     end
 end
 
-function ut_periodic_stream(sp::Spacecraft, period::Real)
+function ut_periodic_stream(ts::Timeserver, period::Real)
     coarse_channel = Channel{Float64}(1)
-    fine_channel = ut_stream(sp)
+    fine_channel = ut_stream(ts)
     last_update = 0.
     @async begin
         try
             for now in fine_channel
                 if now - last_update > period
+                    # skip sending if client hasn't received the time.
+                    # this makes sure that every new time update is up to date
                     if !isready(coarse_channel)
                         put!(coarse_channel, now)
                         last_update = now
@@ -79,8 +84,8 @@ function ut_periodic_stream(sp::Spacecraft, period::Real)
     coarse_channel
 end
 
-function ut_periodic_stream(f::Function, sp::Spacecraft, period::Real)
-    coarse_channel = ut_periodic_stream(sp, period)
+function ut_periodic_stream(f::Function, ts::Timeserver, period::Real)
+    coarse_channel = ut_periodic_stream(ts, period)
     try
         f(coarse_channel)
     finally
