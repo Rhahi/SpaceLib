@@ -1,3 +1,4 @@
+"Other subsystems required for Spacecraft but not part of a spacecraft"
 struct System
     home::Union{Nothing, String}
     lock::Dict{Symbol, Base.Semaphore}
@@ -14,6 +15,7 @@ end
 
 abstract type Timeserver end
 
+"mission time server that require a vessel to be available"
 mutable struct METServer <: Timeserver
     stream::KRPC.Listener
     offset::Float64
@@ -26,6 +28,7 @@ mutable struct METServer <: Timeserver
     end
 end
 
+"Standalone time server providing universal time only"
 mutable struct UTServer <: Timeserver
     conn::KRPC.KRPCConnection
     stream::KRPC.Listener
@@ -58,6 +61,7 @@ struct Spacecraft
     end
 end
 
+"Set time offset to current time"
 function zero!(ts::UTServer) ts.offset = ts.ut end
 function zero!(ts::METServer) ts.offset = ts.met end
 

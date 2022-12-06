@@ -1,4 +1,4 @@
-"""Manually connect to spacecraft. Connection must be done manually."""
+"""Basic connection to spacecraft"""
 function connect_to_spacecraft(name::String="Julia";
     host="127.0.0.1", port=50000, stream_port=50001
 )
