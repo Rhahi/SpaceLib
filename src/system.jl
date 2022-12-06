@@ -21,7 +21,10 @@ mutable struct METServer <: Timeserver
     ut::Float64
     met::Float64
     clients::Vector{Channel{Float64}}
-    METServer(stream, ut, met) = new(stream, 0, ut, met, Vector{Channel{Float64}}())
+    function METServer(conn::KRPC.KRPCConnection, ves::SCR.Vessel)
+        stream, ut, met = Telemetry.start_time_server(conn, ves)
+        new(stream, 0, ut, met, Vector{Channel{Float64}}())
+    end
 end
 
 mutable struct UTServer <: Timeserver
@@ -30,7 +33,10 @@ mutable struct UTServer <: Timeserver
     offset::Float64
     ut::Float64
     clients::Vector{Channel{Float64}}
-    UTserver(conn, stream) = new(conn, stream, 0, 0, Vector{Channel{Float64}}())
+    function UTserver(conn)
+        stream, ut = Telemetry.start_time_server(conn)
+        new(conn, stream, 0, ut, Vector{Channel{Float64}}())
+    end
 end
 
 struct Spacecraft
@@ -47,8 +53,7 @@ struct Spacecraft
                         system::System)
         parts = Dict{Symbol, SCR.Part}()
         events = Dict{Symbol, Condition}()
-        stream, ut, met = Telemetry.start_time_server(conn, ves)
-        ts = METServer(stream, ut, met)
+        ts = METServer(conn, ves)
         @asyncx Telemetry.start_time_updates(ts)
         new(conn, sc, ves, parts, events, system, ts)
     end

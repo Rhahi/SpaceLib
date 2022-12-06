@@ -7,8 +7,6 @@ function connect_to_spacecraft(name::String="Julia";
     space_center = SCR.SpaceCenter(conn)
     active_vessel = SCH.ActiveVessel(space_center)
     sp = Spacecraft(conn, space_center, active_vessel, System())
-    listener = Telemetry.start_time_server(sp)
-    @asyncx Telemetry.start_time_updates(sp, listener)
     @info "Connection complete"
     return sp
 end
@@ -37,9 +35,8 @@ function connect_to_timeserver(name::String="Timeserver";
     host="127.0.0.1", port=50000, stream_port=50001
 )
     conn = kerbal_connect(name, host, port, stream_port)
-    ts = Timeserver(conn)
-    listener = Telemetry.start_time_server(ts)
-    @asyncx Telemetry.start_time_updates(ts, listener)
+    ts = UTServer(conn)
+    @asyncx Telemetry.start_time_updates(ts)
     return ts
 end
 
@@ -49,6 +46,19 @@ function Base.close(sp::Spacecraft)
     for (_, io) in sp.system.ios
         Base.close(io)
     end
+
+function Base.close(ts::METServer)
+    for client in ts.clients
+        close(client)
+    end
+    KRPC.close(ts.stream)
+end
+function Base.close(ts::UTServer)
+    for client in ts.clients
+        close(client)
+    end
+    KRPC.close(ts.stream)
+    KRPC.close(ts.conn)
 end
 
 function host_logger(sp, log_level=LogLevel(-650), log_path=nothing, name="Untitled")
