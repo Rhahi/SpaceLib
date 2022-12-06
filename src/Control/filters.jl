@@ -1,12 +1,8 @@
 """
-    filter_direction(sp::Spacecraft, input::Channel{Any}; period=0.05)
-
-- `input`: ODE solution where [1:3] correspond to velocity of the rocket.
-- `period`: direction update interval.
-- `offset`: offset to apply when extracting velocity from solution.
+interpret incoming solution, typically from simulations, and feed it into a channel.
 """
-function filter_solution_to_direction(sp::Spacecraft, input::Channel{Any};
-    period=0.05, offset=0, interpret::Function=(u)->V2T(view(u, 1:3))
+function filter_solution(interpret::Function, sp::Spacecraft, input::Channel{Any};
+    period=0.05, offset=0
 )
     output = Channel{NTuple{3, Float64}}(1)
     @asyncx begin
@@ -32,14 +28,18 @@ function filter_solution_to_direction(sp::Spacecraft, input::Channel{Any};
                 yield()
             end
         catch e
-            if !isa(e, InvalidStateException)
-                @log_warn "Unexpected error during filtering: direction -- $e"
-            end
+            !isa(e, InvalidStateException) && error(e)
         finally
             close(input)
         end
     end
     return output
+end
+
+function filter_solution_to_direction(sp::Spacecraft, input::Channel{Any};
+    period=0.05, offset=0, interpret::Function=(u)->V2T(view(u, 1:3))
+)
+    filter_solution(interpret, sp, input; period=period, offset=offset)
 end
 
 function filter_vector_limit(sp::Spacecraft, input::Channel{NTuple{3, Float64}};
