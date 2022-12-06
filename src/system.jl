@@ -1,4 +1,4 @@
-mutable struct System
+struct System
     home::Union{Nothing, String}
     lock::Dict{Symbol, Base.Semaphore}
     ios::Dict{Symbol, IOStream}
@@ -8,8 +8,7 @@ mutable struct System
             :iostream => Base.Semaphore(1),
             )
         ios = Dict{Symbol, IOStream}()
-        clocks = Vector{Channel{Float64}}()
-        new(home, lock, ios, 0., 0., clocks)
+        new(home, lock, ios)
     end
 end
 
