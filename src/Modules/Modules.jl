@@ -12,6 +12,7 @@ include("core.jl")
 include("devtools.jl")
 include("parachute.jl")
 include("engine.jl")
+include("parts.jl")
 
 export PartCore, Parachute, Engine
 
