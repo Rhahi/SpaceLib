@@ -42,7 +42,7 @@ end
 direction(sp::Spacecraft, ref::SCR.ReferenceFrame) = SCH.Direction(sp.ves, ref)
 
 function altitude(sp::Spacecraft; mode=:sealevel)
-    flight = SCH.Flight(sp.ves, SCH.ReferenceFrame.BCBF(sp))
+    flight = SCH.Flight(sp.ves, Navigation.ReferenceFrame.BCBF(sp))
     altitude(flight; mode=mode)
 end
 
