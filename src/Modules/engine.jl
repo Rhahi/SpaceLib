@@ -17,13 +17,13 @@ Ignite the engine and wait for expected thrust to be reached.
 `thrust_ratio` is how much compared to available thrust is used while using default value
 """
 function ignite!(sp::Spacecraft, engine::SCR.Engine;
-    expected_thrust=-1,
+    target_thrust=-1,
     timeout=-1,
     thrust_ratio=0.9
 )
     @log_entry "ignite!"
     SCH.Active!(engine, true)
-    expected_thrust = get_expected_thrust(sp, engine, expected_thrust, thrust_ratio)
+    expected_thrust = get_expected_thrust(sp, engine, target_thrust, thrust_ratio)
     return wait_for_thrust(sp, engine, expected_thrust, timeout)
 end
 
