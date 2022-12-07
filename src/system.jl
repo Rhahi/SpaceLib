@@ -1,3 +1,13 @@
+macro asyncx(ex)
+    quote
+        Threads.@spawn try
+            $(esc(ex))
+        catch e
+            @error "Exception in task" exception=(e, catch_backtrace())
+        end
+    end
+end
+
 "Other subsystems required for Spacecraft but not part of a spacecraft"
 struct System
     home::Union{Nothing, String}
@@ -91,16 +101,6 @@ function Base.acquire(sp::Spacecraft, lock::Symbol)
         end
     finally
         release(sp.system.lock[:semaphore])
-    end
-end
-
-macro asyncx(ex)
-    quote
-        Threads.@spawn try
-            $(esc(ex))
-        catch e
-            @error "Exception in task" exception=(e, catch_backtrace())
-        end
     end
 end
 
