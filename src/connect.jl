@@ -47,8 +47,7 @@ function Base.close(sp::Spacecraft)
     end
     KRPC.close(sp.conn.conn)
 end
-
-function Base.close(ts::METServer)
+function Base.close(ts::Union{METServer, LocalServer})
     for client in ts.clients
         close(client)
     end
