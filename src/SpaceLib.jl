@@ -12,7 +12,7 @@ import Base: acquire, release, notify, wait
 export Telemetry, Timing, Control, Navigation, Modules
 
 # types
-export Spacecraft, LogLevel, Timeserver
+export Spacecraft, LogLevel, Timeserver, METServer, UTServer, LocalServer
 
 # functions
 export connect_to_spacecraft, test_spacecraft, connect_to_timeserver

@@ -41,6 +41,17 @@ mutable struct UTServer <: Timeserver
     end
 end
 
+mutable struct LocalServer <: Timeserver
+    stream::Channel{Tuple{Float64}}
+    offset::Float64
+    ut::Float64
+    clients::Vector{Channel{Float64}}
+    function UTserver(conn)
+        stream, ut = Telemetry.start_time_server(stream)
+        new(conn, stream, 0, ut, Vector{Channel{Float64}}())
+    end
+end
+
 struct Spacecraft
     conn::KRPC.KRPCConnection
     sc::SCR.SpaceCenter

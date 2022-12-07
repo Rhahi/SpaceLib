@@ -5,10 +5,27 @@ function start_time_server(conn::KRPC.KRPCConnection, ves::SCR.Vessel)
     return listener, ut, met
 end
 
+"Start ut server with no vessel"
 function start_time_server(conn::KRPC.KRPCConnection)
     listener = KRPC.add_stream(conn, (SC.get_UT(),))
     ut, = KRPC.next_value(listener)
     return listener, ut
+end
+
+"Start local time server without KRPC for tests"
+function start_time_server()
+    stream = Channel{Tuple{Float64}}()
+    @async begin
+        try
+            while true
+                put!(stream, (time(),))
+                sleep(0.02)
+            end
+        finally
+            close(stream)
+        end
+    end
+    stream, time()
 end
 
 "Popualte the timeserver with latest time from KRPC"
@@ -41,7 +58,7 @@ function update_timeserver!(ts::METServer, time::Tuple{Float64, Float64})
     (ts.ut, ts.met) = time
 end
 
-function update_timeserver!(ts::UTServer, time::Tuple{Float64})
+function update_timeserver!(ts::Union{UTServer, LocalServer}, time::Tuple{Float64})
     (ts.ut,) = time
 end
 
