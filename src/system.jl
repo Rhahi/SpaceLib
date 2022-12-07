@@ -56,9 +56,9 @@ mutable struct LocalServer <: Timeserver
     offset::Float64
     ut::Float64
     clients::Vector{Channel{Float64}}
-    function UTserver(conn)
-        stream, ut = Telemetry.start_time_server(stream)
-        new(conn, stream, 0, ut, Vector{Channel{Float64}}())
+    function LocalServer()
+        stream, ut = Telemetry.start_time_server()
+        new(stream, 0, ut, Vector{Channel{Float64}}())
     end
 end
 
