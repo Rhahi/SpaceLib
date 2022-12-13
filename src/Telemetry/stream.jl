@@ -19,7 +19,7 @@ function start_time_server()
         try
             while true
                 put!(stream, (time(),))
-                sleep(0.02)
+                sleep(0.005)
             end
         finally
             close(stream)
