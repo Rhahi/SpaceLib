@@ -29,9 +29,9 @@ end
 
 """
 anticipate modes
-:full = break when next anticipated value is going to pass 0 (from positive)
-:half = do this, but halve the delta
-:none = don't anticiapte
+- :full = break when next anticipated value is going to pass 0 (from positive)
+- :half = do this, but halve the delta
+- :none = don't anticiapte
 """
 function wait_for_value(f::Function, sp::Spacecraft, args...;
     timeout::Real=-1, period::Real=1, anticipate=:none, name=nothing, parentid=nothing
