@@ -2,7 +2,7 @@ module Parachute
 
 using KRPC
 using SpaceLib
-using RemoteLogging.Terminal
+using RemoteLogging
 import ..@trigger_event
 import KRPC.Interface.SpaceCenter as SC
 import KRPC.Interface.SpaceCenter.RemoteTypes as SCR
