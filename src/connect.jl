@@ -60,9 +60,3 @@ function Base.close(ts::UTServer)
     KRPC.close(ts.stream)
     KRPC.close(ts.conn)
 end
-
-function host_logger(sp, log_level=LogLevel(-650), log_path=nothing, name="Untitled")
-    logger = RemoteLogging.metlogger(sp, log_level; log_path=log_path, log_name=name)
-    global_logger(logger)
-    return activate_terminal(logger)
-end

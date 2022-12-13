@@ -16,7 +16,7 @@ export Spacecraft, LogLevel, Timeserver, METServer, UTServer, LocalServer
 
 # functions
 export connect_to_spacecraft, test_spacecraft, connect_to_timeserver
-export host_logger, acquire, release, zero!
+export acquire, release, zero!
 
 # macros
 export @asyncx, @importkrpc
