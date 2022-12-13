@@ -144,24 +144,26 @@ end
 
 """
 Popualte the timeserver with latest time from KRPC.
-When `ts` is closed, this will thorw silently.
+When `ts` is closed, underlying async will thorw silently.
 """
 function start_time_updates(ts::Timeserver)
-    while true
-        update_timeserver!(ts, take!(ts.stream))
-        idx_offset = 0
-        for (idx, c) in enumerate(ts.clients)
-            try
-                !isready(c) && put!(c, ts.ut)
-            catch e
-                if !isa(e, InvalidStateException)
-                    @error "time server has crashed"
-                    error(e)
+    @async begin
+        while true
+            update_timeserver!(ts, take!(ts.stream))
+            idx_offset = 0
+            for (idx, c) in enumerate(ts.clients)
+                try
+                    !isready(c) && put!(c, ts.ut)
+                catch e
+                    if !isa(e, InvalidStateException)
+                        @error "time server has crashed"
+                        error(e)
+                    end
+                    client = popat!(ts.clients, idx - idx_offset)
+                    idx_offset += 1
+                    close(client)
+                    deleteat!(ts.clients, idx)
                 end
-                client = popat!(ts.clients, idx - idx_offset)
-                idx_offset += 1
-                close(client)
-                deleteat!(ts.clients, idx)
             end
         end
     end
