@@ -3,16 +3,16 @@ macro time_resolution()
 end
 
 """Wait for in-game seconds to pass"""
-function delay(sp::Spacecraft, seconds::Real, name=nothing; parentid=nothing)
+function delay(ts::Timeserver, seconds::Real, name=nothing; parentid=nothing)
     @log_timer "delay $seconds with log"
     if seconds < 0.02
-        @log_warn "Given time delay is shorter than time resolution (0.02 seconds)"
+        @warn "Given time delay is shorter than time resolution (0.02 seconds)"
     end
-    t₀ = sp.system.ut
+    t₀ = ts.ut
     t₁ = t₀
     id = progress_init(parentid, name)
     try
-        ut_stream(sp) do stream
+        ut_stream(ts) do stream
             for now in stream
                 t₁ = now
                 progress_update(id, min(1, (now-t₀) / seconds), name)

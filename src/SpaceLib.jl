@@ -6,7 +6,7 @@ using RemoteLogging
 import KRPC.Interface.SpaceCenter as SC
 import KRPC.Interface.SpaceCenter.RemoteTypes as SCR
 import KRPC.Interface.SpaceCenter.Helpers as SCH
-import Base: acquire, release, notify, wait
+import Base: acquire, release, notify, wait, time
 
 # modules
 export Telemetry, Timing, Control, Navigation, Modules

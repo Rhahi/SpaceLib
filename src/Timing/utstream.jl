@@ -1,10 +1,39 @@
-function ut_stream(ts::Timeserver)
+"""
+Create a time stream from time server. Always use non-zeroed raw ut value.
+
+This time stream is duplicated from already running time server and therefore
+will not create a slow overhead compared establishing a new stream through KRPC.
+"""
+function ut_stream(ts::Timeserver)::Channel{Float64}
     @log_timer "time channel created"
     channel = Channel{Float64}(1)
     push!(ts.clients, channel)
     channel
 end
 
+"""
+UT stream with automatic closing.
+
+Without yield:
+```
+ut_stream(ts) do chan
+    while true
+        now = take!(chan)
+        # do something
+    end
+end
+```
+
+With yield:
+```
+ut_stream(ts) do chan
+    for now in chan
+        # do something
+        yield()
+    end
+end
+```
+"""
 function ut_stream(f::Function, ts::Timeserver)
     channel = ut_stream(ts)
     try

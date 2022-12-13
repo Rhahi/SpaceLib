@@ -33,7 +33,7 @@ mutable struct METServer <: Timeserver
     met::Float64
     clients::Vector{Channel{Float64}}
     function METServer(conn::KRPC.KRPCConnection, ves::SCR.Vessel)
-        stream, ut, met = Telemetry.start_time_server(conn, ves)
+        stream, ut, met = start_time_server(conn, ves)
         new(stream, 0, ut, met, Vector{Channel{Float64}}())
     end
 end
@@ -46,7 +46,7 @@ mutable struct UTServer <: Timeserver
     ut::Float64
     clients::Vector{Channel{Float64}}
     function UTserver(conn)
-        stream, ut = Telemetry.start_time_server(conn)
+        stream, ut = start_time_server(conn)
         new(conn, stream, 0, ut, Vector{Channel{Float64}}())
     end
 end
@@ -57,7 +57,7 @@ mutable struct LocalServer <: Timeserver
     ut::Float64
     clients::Vector{Channel{Float64}}
     function LocalServer()
-        stream, ut = Telemetry.start_time_server()
+        stream, ut = start_time_server()
         new(stream, 0, ut, Vector{Channel{Float64}}())
     end
 end
@@ -77,7 +77,7 @@ struct Spacecraft
         parts = Dict{Symbol, SCR.Part}()
         events = Dict{Symbol, Condition}()
         ts = METServer(conn, ves)
-        @asyncx Telemetry.start_time_updates(ts)
+        start_time_updates(ts)
         new(conn, sc, ves, parts, events, system, ts)
     end
 end
@@ -85,6 +85,7 @@ end
 "Set time offset to current time"
 function zero!(ts::UTServer) ts.offset = ts.ut end
 function zero!(ts::METServer) ts.offset = ts.met end
+function Base.time(ts::Timeserver) ts.ut - ts.offset end
 
 Base.notify(sp::Spacecraft, event::Symbol) = notify(sp.events[event])
 Base.wait(sp::Spacecraft, event::Symbol) = wait(sp.events[event])
@@ -148,22 +149,34 @@ When `ts` is closed, underlying async will thorw silently.
 """
 function start_time_updates(ts::Timeserver)
     @async begin
-        while true
-            update_timeserver!(ts, take!(ts.stream))
-            idx_offset = 0
-            for (idx, c) in enumerate(ts.clients)
-                try
-                    !isready(c) && put!(c, ts.ut)
-                catch e
-                    if !isa(e, InvalidStateException)
-                        @error "time server has crashed"
-                        error(e)
+        try
+            t₀ = time(ts)
+            sleep(1)
+            t₁ = time(ts)
+            if t₀ ≠ t₁
+                @error "Timeserver has already been running. zero! it first before starting."
+                return
+            end
+            while true
+                update_timeserver!(ts, take!(ts.stream))
+                idx_offset = 0
+                for (idx, c) in enumerate(ts.clients)
+                    try
+                        !isready(c) && put!(c, ts.ut)
+                    catch e
+                        if !isa(e, InvalidStateException)
+                            @error "time server has crashed"
+                            error(e)
+                        end
+                        client = popat!(ts.clients, idx - idx_offset)
+                        idx_offset += 1
+                        close(client)
                     end
-                    client = popat!(ts.clients, idx - idx_offset)
-                    idx_offset += 1
-                    close(client)
-                    deleteat!(ts.clients, idx)
                 end
+            end
+        catch e
+            if !isa(e, InvalidStateException)
+                @error "Time server suffered irrecoverable error"
             end
         end
     end
