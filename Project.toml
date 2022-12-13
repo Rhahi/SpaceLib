@@ -4,7 +4,6 @@ authors = ["Rhahi <git@rhahi.com>"]
 version = "0.1.2"
 
 [deps]
-Dates = "ade2ca70-3891-5945-98fb-dc099432e06a"
 KRPC = "7a052949-c101-4ca3-9a7e-43a2532b2fa8"
 KerbalMath = "e39bb9fd-e306-4757-9c66-d4f573953a0c"
 LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
