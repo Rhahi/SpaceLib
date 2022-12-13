@@ -2,7 +2,6 @@ module Timing
 
 using KRPC
 using SpaceLib
-using SpaceLib.Telemetry
 using RemoteLogging
 import KRPC.Interface.SpaceCenter as SC
 import KRPC.Interface.SpaceCenter.RemoteTypes as SCR
