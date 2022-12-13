@@ -33,16 +33,16 @@ anticipate modes
 - :half = do this, but halve the delta
 - :none = don't anticiapte
 """
-function wait_for_value(f::Function, sp::Spacecraft, args...;
+function wait_for_value(f::Function, ts::Timeserver, args...;
     timeout::Real=-1, period::Real=1, anticipate=:none, name=nothing, parentid=nothing
 )
-    t₀ = sp.system.ut
+    t₀ = ts.ut
     t₁ = t₀
     first = nothing
     value = nothing
     prev = nothing
     delta = nothing
-    ut_periodic_stream(sp, period) do stream
+    ut_periodic_stream(ts, period) do stream
         id = progress_init(parentid, name)
         if timeout > 0
             idt = progress_subinit(id, "timeout")
@@ -79,12 +79,12 @@ function wait_for_value(f::Function, sp::Spacecraft, args...;
     return value
 end
 
-function wait_for_true(f::Function, sp::Spacecraft, args...;
+function wait_for_true(f::Function, ts::Timeserver, args...;
     timeout::Real=-1, period::Real=1, name=nothing, parentid=nothing
 )
-    t₀ = sp.system.ut
+    t₀ = ts.ut
     t₁ = t₀
-    ut_periodic_stream(sp, period) do stream
+    ut_periodic_stream(ts, period) do stream
         if timeout > 0
             idt = progress_init(parentid, name)
         end
