@@ -83,7 +83,7 @@ struct Spacecraft
 end
 
 "Set time offset to current time"
-function zero!(ts::UTServer) ts.offset = ts.ut end
+function zero!(ts::Union{UTServer, LocalServer}) ts.offset = ts.ut end
 function zero!(ts::METServer) ts.offset = ts.met end
 function Base.time(ts::Timeserver) ts.ut - ts.offset end
 
