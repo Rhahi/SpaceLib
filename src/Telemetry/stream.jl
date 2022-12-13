@@ -28,7 +28,10 @@ function start_time_server()
     stream, time()
 end
 
-"Popualte the timeserver with latest time from KRPC"
+"""
+Popualte the timeserver with latest time from KRPC.
+When `ts` is closed, this will thorw silently.
+"""
 function start_time_updates(ts::Timeserver)
     while true
         update_timeserver!(ts, take!(ts.stream))
