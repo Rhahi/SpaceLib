@@ -30,27 +30,23 @@ end
 
 "Popualte the timeserver with latest time from KRPC"
 function start_time_updates(ts::Timeserver)
-    try
-        for time in ts.stream
-            update_timeserver!(ts, time)
-            idx_offset = 0
-            for (idx, c) in enumerate(ts.clients)
-                try
-                    !isready(c) && put!(c, ts.ut)
-                catch e
-                    if !isa(e, InvalidStateException)
-                        @error "time server has crashed"
-                        error(e)
-                    end
-                    client = popat!(ts.clients, idx - idx_offset)
-                    idx_offset += 1
-                    close(client)
-                    deleteat!(ts.clients, idx)
+    while true
+        update_timeserver!(ts, take!(ts.stream))
+        idx_offset = 0
+        for (idx, c) in enumerate(ts.clients)
+            try
+                !isready(c) && put!(c, ts.ut)
+            catch e
+                if !isa(e, InvalidStateException)
+                    @error "time server has crashed"
+                    error(e)
                 end
+                client = popat!(ts.clients, idx - idx_offset)
+                idx_offset += 1
+                close(client)
+                deleteat!(ts.clients, idx)
             end
         end
-    finally
-        close(ts.stream)
     end
 end
 
