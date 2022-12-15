@@ -11,9 +11,3 @@ end
 
 throttle(control::SCR.Control) = SCH.Throttle(control)
 throttle(sp::Spacecraft) = throttle(SCH.Control(sp.ves))
-
-function verify_throttle!(sp::Spacecraft, value::Real, timeout=3)
-    throttle!(sp, value)
-    Timing.delay(sp, timeout)
-    throttle(sp) ≉ value && error("Throttle error")
-end
