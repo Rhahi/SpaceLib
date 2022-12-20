@@ -12,9 +12,14 @@ function stage!(sp::Spacecraft)
     acquire(sp, :stage)
     SCH.ActivateNextStage(SCH.Control(sp.ves))
     @log_status "stage"
-    @asyncx begin
-        Timing.delay(sp, 0.5625)
-        @log_status "stage is ready again"
-        release(sp, :stage)
+    @async begin
+        try
+            Timing.delay(sp.ts, 0.5625)
+            @log_status "stage is ready again"
+            release(sp, :stage)
+        catch e
+            @error(e)
+            error(e)
+        end
     end
 end

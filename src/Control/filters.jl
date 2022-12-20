@@ -1,7 +1,7 @@
 """
 interpret incoming solution, typically from simulations, and feed it into a channel.
 """
-function filter_solution(interpret::Function, sp::Spacecraft, input::Channel{Any};
+function filter_solution(interpret::Function, ts::Timeserver, input::Channel{Any};
     period=0.05, offset=0
 )
     output = Channel{NTuple{3, Float64}}(1)
@@ -10,7 +10,7 @@ function filter_solution(interpret::Function, sp::Spacecraft, input::Channel{Any
         solution = new_solution
         isnothing(solution) && error("Bad initial solution")
         try
-            for _ in Telemetry.ut_periodic_stream(sp, period)
+            for _ in Telemetry.ut_periodic_stream(ts, period)
                 # escape clause
                 isopen(input) || break
 
@@ -22,7 +22,7 @@ function filter_solution(interpret::Function, sp::Spacecraft, input::Channel{Any
                 end
 
                 # output
-                time = sp.system.met - offset
+                time = ts.ut - offset
                 u = solution(time)
                 put!(output, interpret(u))
                 yield()
@@ -36,19 +36,19 @@ function filter_solution(interpret::Function, sp::Spacecraft, input::Channel{Any
     return output
 end
 
-function filter_solution_to_direction(sp::Spacecraft, input::Channel{Any};
+function filter_solution_to_direction(ts::Timeserver, input::Channel{Any};
     period=0.05, offset=0, interpret::Function=(u)->V2T(view(u, 1:3))
 )
-    filter_solution(interpret, sp, input; period=period, offset=offset)
+    filter_solution(interpret, ts, input; period=period, offset=offset)
 end
 
-function filter_vector_limit(sp::Spacecraft, input::Channel{NTuple{3, Float64}};
+function filter_vector_limit(ts::Timeserver, input::Channel{NTuple{3, Float64}};
     degrees_per_second, tolerance=1
 )
     output = Channel{NTuple{3, Float64}}(1)
     @asyncx begin
         vecfrom = take!(input)
-        past = sp.system.ut
+        past = ts.ut
         put!(output, vecfrom)
         try
             while true
@@ -56,7 +56,7 @@ function filter_vector_limit(sp::Spacecraft, input::Channel{NTuple{3, Float64}};
                 if norm(vecfrom) == 0 || norm(vecto) == 0
                     @warn "cannot find angle with zero vector, skipping to direct output"
                 else
-                    now = sp.system.ut
+                    now = ts.ut
                     Δθ = ∠θ(vecfrom, vecto)
                     target_diff = (now - past) * deg2rad(degrees_per_second)
                     if Δθ > target_diff
@@ -111,7 +111,7 @@ function filter_spin(sp::Spacecraft, ref::SCR.ReferenceFrame, input::Channel{Flo
     output = Channel{Float32}(1)
     @asyncx begin
         increment = take!(input)
-        Telemetry.ut_periodic_stream(sp, period) do stream
+        Telemetry.ut_periodic_stream(sp.ts, period) do stream
             for _ in stream
                 if isready(input)
                     increment = take!(input)

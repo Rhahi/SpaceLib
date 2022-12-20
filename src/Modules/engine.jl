@@ -43,11 +43,11 @@ function get_expected_thrust(sp::Spacecraft, engine::SCR.Engine, expected_thrust
 end
 
 "Wait for engine thrust to reach target. Return how long the engine has been burning since ignition."
-function wait_for_thrust(sp::Spacecraft, engine::SCR.Engine, expected_thrust, timeout, polling_period=0.1)
+function wait_for_thrust(ts::Timeserver, engine::SCR.Engine, expected_thrust, timeout, polling_period=0.1)
     t_ignition = missing
     ignition_ok = true
     title = SCH.Name(SCH.Part(engine))
-    SpaceLib.Telemetry.ut_periodic_stream(sp, polling_period) do listener
+    SpaceLib.Telemetry.ut_periodic_stream(ts, polling_period) do listener
         for now in listener
             th = SCH.Thrust(engine)
             if ismissing(t_ignition)
@@ -67,7 +67,7 @@ function wait_for_thrust(sp::Spacecraft, engine::SCR.Engine, expected_thrust, ti
             end
         end
     end
-    @log_module "Time spent spinning up: $(sp.system.ut - t_ignition)s"
+    @log_module "Time spent spinning up: $(ts.ut - t_ignition)s"
     return ignition_ok
 end
 
