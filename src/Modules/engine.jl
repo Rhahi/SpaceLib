@@ -34,7 +34,7 @@ function get_expected_thrust(sp::Spacecraft, engine::SCR.Engine, expected_thrust
     available_thrust == 0 && @log_attention "there is no available thrust, yet ignite! was called"
     if expected_thrust > 0
         if expected_thrust > available_thrust
-            @log_warn "provided expected thrust is higher than available thrust"
+            @warn "provided expected thrust is higher than available thrust"
         end
     else
         expected_thrust = available_thrust * thrust_ratio
@@ -56,7 +56,7 @@ function wait_for_thrust(sp::Spacecraft, engine::SCR.Engine, expected_thrust, ti
                 t_ignition = now
             else
                 if timeout > 0 && (now - t_ignition) > timeout
-                    @log_warn "$title ignition timeout"
+                    @warn "$title ignition timeout"
                     ignition_ok = false
                     break
                 end

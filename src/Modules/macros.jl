@@ -10,12 +10,12 @@ macro trigger_event(part, module_name, event_name)
                 if e == $event_name
                     $SCH.TriggerEvent(m, e)
                     m = $module_name
-                    @log_info "$m: Successfully triggered event [$e]"
+                    @info "$m: Successfully triggered event [$e]"
                     return
                 end
             end
         end
         m, e = $module_name, $event_name
-        @log_warn "$m: Failed to trigger event [$e]"
+        @warn "$m: Failed to trigger event [$e]"
     end
 end

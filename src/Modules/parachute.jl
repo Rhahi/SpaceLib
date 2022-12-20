@@ -44,7 +44,7 @@ end
 function unarm(part::SCR.Part)
     chute = SCH.Parachute(part)
     if SCH.State(chute).value |> ParachuteState ≠ ARMED
-        @log_warn "Parachute needs to be armed to be unarmed."
+        @warn "Parachute needs to be armed to be unarmed."
         return
     end
     @trigger_event part "RealChuteModule" "Disarm parachute"

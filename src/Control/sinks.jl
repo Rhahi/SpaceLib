@@ -14,7 +14,7 @@ function sink_direction(
             while true
                 cmd = take!(input)
                 if norm(cmd) == 0
-                    @log_warn "skipping direction command with 0-vector"
+                    @warn "skipping direction command with 0-vector"
                     yield()
                     continue
                 end

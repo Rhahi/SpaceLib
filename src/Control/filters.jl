@@ -54,7 +54,7 @@ function filter_vector_limit(sp::Spacecraft, input::Channel{NTuple{3, Float64}};
             while true
                 vecto = take!(input)
                 if norm(vecfrom) == 0 || norm(vecto) == 0
-                    @log_warn "cannot find angle with zero vector, skipping to direct output"
+                    @warn "cannot find angle with zero vector, skipping to direct output"
                 else
                     now = sp.system.ut
                     Δθ = ∠θ(vecfrom, vecto)
