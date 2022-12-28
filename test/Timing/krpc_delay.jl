@@ -7,29 +7,29 @@ connect_to_spacecraft() do sp
 
     @testset "delay" begin
         @testset "Basic delay" begin
-            t₀, t₁ = Timing.delay(sp, 1)
+            t₀, t₁ = Timing.delay(sp.ts, 1)
             @test isapprox(t₁ - t₀, 1, atol=0.02)
-            t₀, t₁ = Timing.delay(sp, 1.)
+            t₀, t₁ = Timing.delay(sp.ts, 1.)
             @test isapprox(t₁ - t₀, 1, atol=0.02)
         end
 
         @testset "Small time delay" begin
-            t₀, t₁ = Timing.delay(sp, 0.2)
+            t₀, t₁ = Timing.delay(sp.ts, 0.2)
             @test isapprox(t₁ - t₀, 0.2, atol=0.02)
-            t₀, t₁ = Timing.delay(sp, 0.04)
+            t₀, t₁ = Timing.delay(sp.ts, 0.04)
             @test isapprox(t₁ - t₀, 0.04, atol=0.02)
         end
 
         @testset "Async time delay" begin
-            w1 = @asyncx Timing.delay(sp, 1)
+            w1 = @asyncx Timing.delay(sp.ts, 1)
             wait(w1)
             t₀, t₁ = w1.result
             @test isapprox(t₁ - t₀, 1, atol=0.02)
         end
 
         @testset "Simultaneous delay" begin
-            w1 = @asyncx Timing.delay(sp, 1)
-            w2 = @asyncx Timing.delay(sp, 2.)
+            w1 = @asyncx Timing.delay(sp.ts, 1)
+            w2 = @asyncx Timing.delay(sp.ts, 2.)
             wait(w1)
             wait(w2)
             w1₀, w1₁ = w1.result
@@ -40,12 +40,12 @@ connect_to_spacecraft() do sp
         end
 
         @testset "Many parallel delays" begin
-            w1 = @asyncx Timing.delay(sp, 1)
-            w2 = @asyncx Timing.delay(sp, 2.)
-            w3 = @asyncx Timing.delay(sp, 2.)
-            w4 = @asyncx Timing.delay(sp, 2.)
-            w5 = @asyncx Timing.delay(sp, 2.)
-            w6 = @asyncx Timing.delay(sp, 2.)
+            w1 = @asyncx Timing.delay(sp.ts, 1)
+            w2 = @asyncx Timing.delay(sp.ts, 2.)
+            w3 = @asyncx Timing.delay(sp.ts, 2.)
+            w4 = @asyncx Timing.delay(sp.ts, 2.)
+            w5 = @asyncx Timing.delay(sp.ts, 2.)
+            w6 = @asyncx Timing.delay(sp.ts, 2.)
             wait(w1)
             wait(w2)
             wait(w3)

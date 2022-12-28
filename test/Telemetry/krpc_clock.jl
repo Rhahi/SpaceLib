@@ -10,7 +10,7 @@ using SpaceLib.Telemetry
         ut₀ = sp.system.ut
 
         # sleep 1 second, and see that time has elapsed around that
-        Timing.delay(sp, 1)
+        Timing.delay(sp.ts, 1)
         @test 0.9 ≤ sp.system.ut - ut₀ ≤ 2
     end
 end
