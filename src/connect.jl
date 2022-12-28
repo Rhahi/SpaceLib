@@ -20,7 +20,7 @@ function connect_to_spacecraft(f::Function, name::String, log_level=LogLevel(-65
 )
     sp = connect_to_spacecraft(name; host=host, port=port, stream_port=stream_port)
     s1, s2, _ = host_logger(sp, log_level, log_path, name)
-    RemoteLogging.Terminal.activate()
+    RemoteLogging.activate()
     try
         f(sp)
     finally
